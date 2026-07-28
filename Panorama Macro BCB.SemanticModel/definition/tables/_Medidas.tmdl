@@ -1,0 +1,64 @@
+table _Medidas
+	lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000001
+
+	measure 'Valor Atual' =
+			CALCULATE(
+			    SUM(f_indicadores[valor]),
+			    LASTNONBLANK(d_calendario[data], CALCULATE(SUM(f_indicadores[valor])))
+			)
+		formatString: #,0.00
+		displayFolder: 01. Base
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000002
+
+	measure 'Data de Referência' = CALCULATE(MAX(f_indicadores[data]))
+		formatString: Short Date
+		displayFolder: 01. Base
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000003
+
+	measure 'Variação no Mês' =
+			VAR _dataRef = [Data de Referência]
+			VAR _atual = [Valor Atual]
+			VAR _anterior =
+			    CALCULATE([Valor Atual], d_calendario[data] <= EDATE(_dataRef, -1))
+			RETURN
+			    _atual - _anterior
+		formatString: #,0.00
+		displayFolder: 02. Variação
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000004
+
+	measure 'Variação 12 Meses' =
+			VAR _dataRef = [Data de Referência]
+			VAR _atual = [Valor Atual]
+			VAR _anterior =
+			    CALCULATE([Valor Atual], d_calendario[data] <= EDATE(_dataRef, -12))
+			RETURN
+			    _atual - _anterior
+		formatString: #,0.00
+		displayFolder: 02. Variação
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000005
+
+	measure 'Média no Período' = AVERAGE(f_indicadores[valor])
+		formatString: #,0.00
+		displayFolder: 03. Estatística
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000006
+
+	measure 'Mínimo' = MIN(f_indicadores[valor])
+		formatString: #,0.00
+		displayFolder: 03. Estatística
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000007
+
+	measure 'Máximo' = MAX(f_indicadores[valor])
+		formatString: #,0.00
+		displayFolder: 03. Estatística
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000008
+
+	partition _Medidas = m
+		mode: import
+		source =
+				let
+				    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Coluna 1" = _t]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte, {{"Coluna 1", type text}})
+				in
+				    #"Tipo Alterado"
+
+	annotation PBI_ResultType = Table
