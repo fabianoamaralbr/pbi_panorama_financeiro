@@ -1,0 +1,21 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "v_slicer_ind",
+  "position": { "x": 40, "y": 40, "z": 0, "height": 80, "width": 400, "tabOrder": 0 },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "d_indicador" } }, "Property": "indicador" } }, "queryRef": "d_indicador.indicador", "nativeQueryRef": "indicador", "active": true }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [ { "properties": { "mode": { "expr": { "Literal": { "Value": "'Dropdown'" } } } } }]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "v_tabela",
+  "position": { "x": 40, "y": 580, "z": 3, "height": 120, "width": 800, "tabOrder": 3 },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "d_calendario" } }, "Property": "mesano" } }, "queryRef": "d_calendario.mesano", "nativeQueryRef": "mesano" },
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Valor Atual" } }, "queryRef": "_Medidas.Valor Atual", "nativeQueryRef": "Valor Atual" }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

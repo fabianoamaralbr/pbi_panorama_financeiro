@@ -1,0 +1,24 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "v_card_max",
+  "position": { "x": 870, "y": 360, "z": 2, "height": 100, "width": 370, "tabOrder": 2 },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Máximo" } }, "queryRef": "_Medidas.Máximo", "nativeQueryRef": "Máximo" }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        { "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'Máximo'" } } } } }
+      ],
+      "border": [ { "properties": { "show": { "expr": { "Literal": { "Value": "true" } } } } } ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
