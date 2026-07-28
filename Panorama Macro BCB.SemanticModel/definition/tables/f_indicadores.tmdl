@@ -1,0 +1,43 @@
+table f_indicadores
+	lineageTag: b1a7e0c2-4001-4aaa-8bbb-000000000001
+
+	column codigo
+		dataType: string
+		lineageTag: b1a7e0c2-4001-4aaa-8bbb-000000000002
+		summarizeBy: none
+		sourceColumn: codigo
+
+		annotation SummarizationSetBy = Automatic
+
+	column data
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: b1a7e0c2-4001-4aaa-8bbb-000000000003
+		summarizeBy: none
+		sourceColumn: data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column valor
+		dataType: double
+		lineageTag: b1a7e0c2-4001-4aaa-8bbb-000000000004
+		summarizeBy: sum
+		sourceColumn: valor
+
+		annotation SummarizationSetBy = Automatic
+
+	partition f_indicadores = m
+		mode: import
+		source =
+				let
+				    Codigos = d_indicador,
+				    ComSerie = Table.AddColumn(Codigos, "serie", each fnBcbSgs([codigo], [data_inicial]), type table),
+				    Selecao = Table.SelectColumns(ComSerie, {"codigo", "serie"}),
+				    Expandido = Table.ExpandTableColumn(Selecao, "serie", {"data", "valor"}, {"data", "valor"}),
+				    Tipos = Table.TransformColumnTypes(Expandido, {{"codigo", type text}, {"data", type date}, {"valor", type number}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
