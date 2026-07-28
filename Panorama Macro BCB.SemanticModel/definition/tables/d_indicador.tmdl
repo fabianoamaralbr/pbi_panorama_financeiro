@@ -1,0 +1,80 @@
+table d_indicador
+	lineageTag: b1a7e0c2-3001-4aaa-8bbb-000000000001
+
+	column codigo
+		dataType: string
+		lineageTag: b1a7e0c2-3001-4aaa-8bbb-000000000002
+		summarizeBy: none
+		sourceColumn: codigo
+
+		annotation SummarizationSetBy = Automatic
+
+	column indicador
+		dataType: string
+		lineageTag: b1a7e0c2-3001-4aaa-8bbb-000000000003
+		summarizeBy: none
+		sourceColumn: indicador
+
+		annotation SummarizationSetBy = Automatic
+
+	column unidade
+		dataType: string
+		lineageTag: b1a7e0c2-3001-4aaa-8bbb-000000000004
+		summarizeBy: none
+		sourceColumn: unidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column tipo
+		dataType: string
+		lineageTag: b1a7e0c2-3001-4aaa-8bbb-000000000005
+		summarizeBy: none
+		sourceColumn: tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column frequencia
+		dataType: string
+		lineageTag: b1a7e0c2-3001-4aaa-8bbb-000000000006
+		summarizeBy: none
+		sourceColumn: frequencia
+
+		annotation SummarizationSetBy = Automatic
+
+	column ordem
+		dataType: int64
+		formatString: 0
+		lineageTag: b1a7e0c2-3001-4aaa-8bbb-000000000007
+		summarizeBy: none
+		sourceColumn: ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	column data_inicial
+		dataType: string
+		lineageTag: b1a7e0c2-3001-4aaa-8bbb-000000000008
+		summarizeBy: none
+		sourceColumn: data_inicial
+
+		annotation SummarizationSetBy = Automatic
+
+	partition d_indicador = m
+		mode: import
+		source =
+				let
+				    Fonte = #table(
+				        type table [codigo = text, indicador = text, unidade = text, tipo = text, frequencia = text, ordem = Int64.Type, data_inicial = text],
+				        {
+				            {"432", "Selic Meta", "% a.a.", "Taxa", "Diária", 1, DataInicial},
+				            {"12", "CDI", "% a.d.", "Taxa", "Diária", 2, DataInicial},
+				            {"433", "IPCA (mensal)", "% a.m.", "Taxa", "Mensal", 3, DataInicial},
+				            {"13522", "IPCA (acum. 12m)", "%", "Taxa", "Mensal", 4, DataInicial},
+				            {"189", "IGP-M (mensal)", "% a.m.", "Taxa", "Mensal", 5, DataInicial},
+				            {"1", "Dólar PTAX (venda)", "R$", "Preço", "Diária", 6, DataInicial},
+				            {"4380", "PIB mensal", "R$ milhões", "Índice", "Mensal", 7, DataInicial}
+				        }
+				    )
+				in
+				    Fonte
+
+	annotation PBI_ResultType = Table
