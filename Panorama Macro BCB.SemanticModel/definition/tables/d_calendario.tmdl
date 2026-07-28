@@ -1,0 +1,88 @@
+table d_calendario
+	lineageTag: b1a7e0c2-5001-4aaa-8bbb-000000000001
+	dataCategory: Time
+
+	column data
+		isKey
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: b1a7e0c2-5001-4aaa-8bbb-000000000002
+		summarizeBy: none
+		sourceColumn: data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ano
+		dataType: int64
+		formatString: 0
+		lineageTag: b1a7e0c2-5001-4aaa-8bbb-000000000003
+		summarizeBy: none
+		sourceColumn: ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column mes
+		dataType: int64
+		formatString: 0
+		lineageTag: b1a7e0c2-5001-4aaa-8bbb-000000000004
+		summarizeBy: none
+		sourceColumn: mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column nomemes
+		dataType: string
+		lineageTag: b1a7e0c2-5001-4aaa-8bbb-000000000005
+		summarizeBy: none
+		sourceColumn: nomemes
+
+		annotation SummarizationSetBy = Automatic
+
+	column trimestre
+		dataType: int64
+		formatString: 0
+		lineageTag: b1a7e0c2-5001-4aaa-8bbb-000000000006
+		summarizeBy: none
+		sourceColumn: trimestre
+
+		annotation SummarizationSetBy = Automatic
+
+	column anomes
+		dataType: int64
+		formatString: 0
+		lineageTag: b1a7e0c2-5001-4aaa-8bbb-000000000007
+		summarizeBy: none
+		sourceColumn: anomes
+
+		annotation SummarizationSetBy = Automatic
+
+	column mesano
+		dataType: string
+		lineageTag: b1a7e0c2-5001-4aaa-8bbb-000000000008
+		summarizeBy: none
+		sourceColumn: mesano
+		sortByColumn: anomes
+
+		annotation SummarizationSetBy = Automatic
+
+	partition d_calendario = m
+		mode: import
+		source =
+				let
+				    MinData = List.Min(f_indicadores[data]),
+				    MaxData = Date.From(DateTime.LocalNow()),
+				    Dias = List.Dates(MinData, Duration.Days(MaxData - MinData) + 1, #duration(1, 0, 0, 0)),
+				    Tabela = Table.FromList(Dias, Splitter.SplitByNothing(), {"data"}),
+				    ComTipo = Table.TransformColumnTypes(Tabela, {{"data", type date}}),
+				    Ano = Table.AddColumn(ComTipo, "ano", each Date.Year([data]), Int64.Type),
+				    Mes = Table.AddColumn(Ano, "mes", each Date.Month([data]), Int64.Type),
+				    NomeMes = Table.AddColumn(Mes, "nomemes", each Date.ToText([data], [Format="MMM", Culture="pt-BR"]), type text),
+				    Trim = Table.AddColumn(NomeMes, "trimestre", each Date.QuarterOfYear([data]), Int64.Type),
+				    AnoMes = Table.AddColumn(Trim, "anomes", each [ano] * 100 + [mes], Int64.Type),
+				    MesAno = Table.AddColumn(AnoMes, "mesano", each Text.PadStart(Text.From([mes]), 2, "0") & "/" & Text.From([ano]), type text)
+				in
+				    MesAno
+
+	annotation PBI_ResultType = Table
