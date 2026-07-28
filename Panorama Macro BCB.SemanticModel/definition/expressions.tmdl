@@ -1,0 +1,61 @@
+expression UrlBaseBCB = "https://api.bcb.gov.br" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000001
+
+	annotation PBI_ResultType = Text
+
+expression DataInicial = "2015-01-01" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000002
+
+	annotation PBI_ResultType = Text
+
+expression fnBcbSgs =
+		let
+		    fnBcbSgs = (codigo as text, dataInicial as text) as table =>
+		        let
+		            DataFim = Date.From(DateTime.LocalNow()),
+		            DataIni = Date.FromText(dataInicial, [Format="yyyy-MM-dd", Culture="en-US"]),
+		            AnosTotais = Duration.TotalDays(DataFim - DataIni) / 365,
+		            NumJanelas = List.Max({1, Number.RoundUp(AnosTotais / 10)}),
+		            Janelas = List.Transform(
+		                {0..NumJanelas - 1},
+		                (i) =>
+		                    let
+		                        ini = Date.AddYears(DataIni, i * 10),
+		                        fimBruto = Date.AddDays(Date.AddYears(ini, 10), -1),
+		                        fim = if fimBruto > DataFim then DataFim else fimBruto
+		                    in
+		                        [ini = ini, fim = fim]
+		            ),
+		            BuscaJanela = (jan as record) as table =>
+		                let
+		                    resp = Web.Contents(
+		                        UrlBaseBCB,
+		                        [
+		                            RelativePath = "dados/serie/bcdata.sgs." & codigo & "/dados",
+		                            Query = [
+		                                formato = "json",
+		                                dataInicial = Date.ToText(jan[ini], [Format="dd/MM/yyyy", Culture="pt-BR"]),
+		                                dataFinal = Date.ToText(jan[fim], [Format="dd/MM/yyyy", Culture="pt-BR"])
+		                            ]
+		                        ]
+		                    ),
+		                    json = try Json.Document(resp) otherwise null,
+		                    tbl =
+		                        if json = null or not (json is list) or List.IsEmpty(json) then
+		                            #table(type table [data = text, valor = text], {})
+		                        else
+		                            Table.FromRecords(json)
+		                in
+		                    tbl,
+		            Combinado = Table.Combine(List.Transform(Janelas, each BuscaJanela(_))),
+		            ComData = Table.TransformColumns(Combinado, {{"data", each Date.FromText(_, [Format="dd/MM/yyyy", Culture="pt-BR"]), type date}}),
+		            ComValor = Table.TransformColumns(ComData, {{"valor", each Number.FromText(_, "en-US"), type number}}),
+		            SemDup = Table.Distinct(ComValor, {"data"}),
+		            Ordenado = Table.Sort(SemDup, {{"data", Order.Ascending}})
+		        in
+		            Ordenado
+		in
+		    fnBcbSgs
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000003
+
+	annotation PBI_ResultType = Function
