@@ -1,0 +1,57 @@
+table d_empresa
+	lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000001
+
+	column ticker
+		dataType: string
+		lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000002
+		summarizeBy: none
+		sourceColumn: ticker
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome
+		dataType: string
+		lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000003
+		summarizeBy: none
+		sourceColumn: nome
+
+		annotation SummarizationSetBy = Automatic
+
+	column setor
+		dataType: string
+		lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000004
+		summarizeBy: none
+		sourceColumn: setor
+
+		annotation SummarizationSetBy = Automatic
+
+	column preco_atual
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000005
+		summarizeBy: none
+		sourceColumn: preco_atual
+
+		annotation SummarizationSetBy = Automatic
+
+	partition d_empresa = m
+		mode: import
+		source =
+				let
+				    Alvo = List.Transform(Text.Split(IbovTickers, ","), each Text.Trim(_)),
+				    resp = Web.Contents(
+				        UrlBaseBrapi,
+				        [RelativePath = "api/quote/list", Query = [token = BrapiToken, limit = "1000"]]
+				    ),
+				    json = Json.Document(resp),
+				    stocks = json[stocks],
+				    tbl = Table.FromRecords(stocks),
+				    sel = Table.SelectColumns(tbl, {"stock", "name", "sector", "close"}, MissingField.UseNull),
+				    filtro = Table.SelectRows(sel, each List.Contains(Alvo, [stock])),
+				    ren = Table.RenameColumns(filtro, {{"stock", "ticker"}, {"name", "nome"}, {"sector", "setor"}, {"close", "preco_atual"}}),
+				    tipos = Table.TransformColumnTypes(ren, {{"ticker", type text}, {"nome", type text}, {"setor", type text}, {"preco_atual", type number}}),
+				    semDup = Table.Distinct(tipos, {"ticker"})
+				in
+				    semDup
+
+	annotation PBI_ResultType = Table
