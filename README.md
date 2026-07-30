@@ -43,3 +43,12 @@ d_indicador 1 ── * f_indicadores * ── 1 d_calendario
 - `UrlBaseBCB` (padrão `https://api.bcb.gov.br`).
 
 Projeto sem dados sensíveis; 100% baseado em dados públicos.
+
+## Página "Dividendos (Ibovespa)"
+
+Lista as 15 ações do Ibovespa com maior **Dividend Yield dos últimos 12 meses** e seus setores.
+
+- **Fonte:** API pública [brapi.dev](https://brapi.dev) — setor/preço via `/api/quote/list`, proventos via `/api/quote/{ticker}?dividends=true`.
+- **DY 12m** = (dividendos + JCP pagos nos últimos 12 meses) ÷ preço atual.
+- **Token (obrigatório):** crie um token free em https://brapi.dev/dashboard e preencha o parâmetro `BrapiToken` em *Transformar dados → Gerenciar parâmetros* no Power BI Desktop. **Nunca** comite o token — o repositório mantém `BrapiToken = ""`.
+- **Composição do Ibovespa:** o parâmetro `IbovTickers` traz a carteira atual do índice. Atualize-o a cada rebalanceamento trimestral da B3.
