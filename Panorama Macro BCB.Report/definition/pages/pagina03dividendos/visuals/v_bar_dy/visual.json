@@ -8,31 +8,12 @@
       "queryState": {
         "Category": {
           "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": { "SourceRef": { "Entity": "d_empresa" } },
-                  "Property": "nome"
-                }
-              },
-              "queryRef": "d_empresa.nome",
-              "nativeQueryRef": "nome",
-              "active": true
-            }
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "d_empresa" } }, "Property": "nome" } }, "queryRef": "d_empresa.nome", "nativeQueryRef": "nome", "active": true }
           ]
         },
         "Y": {
           "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": { "SourceRef": { "Entity": "_Medidas" } },
-                  "Property": "Dividend Yield 12m"
-                }
-              },
-              "queryRef": "_Medidas.Dividend Yield 12m",
-              "nativeQueryRef": "Dividend Yield 12m"
-            }
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Dividend Yield 12m" } }, "queryRef": "_Medidas.Dividend Yield 12m", "nativeQueryRef": "Dividend Yield 12m" }
           ]
         }
       }
@@ -45,23 +26,15 @@
           "type": "TopN",
           "filter": {
             "Version": 2,
-            "From": [
-              { "Name": "d", "Entity": "d_empresa", "Type": 0 },
-              { "Name": "m", "Entity": "_Medidas", "Type": 0 }
-            ],
+            "From": [ { "Name": "d", "Entity": "d_empresa", "Type": 0 } ],
             "Where": [
               {
                 "Condition": {
                   "TopN": {
-                    "Expressions": [
-                      { "Column": { "Expression": { "SourceRef": { "Source": "d" } }, "Property": "nome" } }
-                    ],
+                    "Expressions": [ { "Column": { "Expression": { "SourceRef": { "Source": "d" } }, "Property": "nome" } } ],
                     "Top": 15,
                     "OrderBy": [
-                      {
-                        "Direction": 2,
-                        "Expression": { "Measure": { "Expression": { "SourceRef": { "Source": "m" } }, "Property": "Dividend Yield 12m" } }
-                      }
+                      { "Direction": 2, "Expression": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Dividend Yield 12m" } } }
                     ]
                   }
                 }

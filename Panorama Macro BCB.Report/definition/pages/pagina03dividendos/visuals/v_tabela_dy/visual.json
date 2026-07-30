@@ -8,74 +8,16 @@
       "queryState": {
         "Values": {
           "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": { "SourceRef": { "Entity": "d_empresa" } },
-                  "Property": "nome"
-                }
-              },
-              "queryRef": "d_empresa.nome",
-              "nativeQueryRef": "nome"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": { "SourceRef": { "Entity": "d_empresa" } },
-                  "Property": "setor"
-                }
-              },
-              "queryRef": "d_empresa.setor",
-              "nativeQueryRef": "setor"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": { "SourceRef": { "Entity": "_Medidas" } },
-                  "Property": "Dividend Yield 12m"
-                }
-              },
-              "queryRef": "_Medidas.Dividend Yield 12m",
-              "nativeQueryRef": "Dividend Yield 12m"
-            }
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "d_empresa" } }, "Property": "nome" } }, "queryRef": "d_empresa.nome", "nativeQueryRef": "nome" },
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "d_empresa" } }, "Property": "setor" } }, "queryRef": "d_empresa.setor", "nativeQueryRef": "setor" },
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Preço Atual Ação" } }, "queryRef": "_Medidas.Preço Atual Ação", "nativeQueryRef": "Preço Atual Ação" },
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Dividend Yield 12m" } }, "queryRef": "_Medidas.Dividend Yield 12m", "nativeQueryRef": "Dividend Yield 12m" },
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Dividendo Mensal por Ação" } }, "queryRef": "_Medidas.Dividendo Mensal por Ação", "nativeQueryRef": "Dividendo Mensal por Ação" },
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "P/L" } }, "queryRef": "_Medidas.P/L", "nativeQueryRef": "P/L" },
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Posição 52 Semanas" } }, "queryRef": "_Medidas.Posição 52 Semanas", "nativeQueryRef": "Posição 52 Semanas" }
           ]
         }
       }
-    },
-    "filterConfig": {
-      "filters": [
-        {
-          "name": "f_v_tabela_dy_topn",
-          "field": { "Column": { "Expression": { "SourceRef": { "Entity": "d_empresa" } }, "Property": "nome" } },
-          "type": "TopN",
-          "filter": {
-            "Version": 2,
-            "From": [
-              { "Name": "d", "Entity": "d_empresa", "Type": 0 },
-              { "Name": "m", "Entity": "_Medidas", "Type": 0 }
-            ],
-            "Where": [
-              {
-                "Condition": {
-                  "TopN": {
-                    "Expressions": [
-                      { "Column": { "Expression": { "SourceRef": { "Source": "d" } }, "Property": "nome" } }
-                    ],
-                    "Top": 15,
-                    "OrderBy": [
-                      {
-                        "Direction": 2,
-                        "Expression": { "Measure": { "Expression": { "SourceRef": { "Source": "m" } }, "Property": "Dividend Yield 12m" } }
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          "howCreated": "User"
-        }
-      ]
     },
     "drillFilterOtherVisuals": true
   }
