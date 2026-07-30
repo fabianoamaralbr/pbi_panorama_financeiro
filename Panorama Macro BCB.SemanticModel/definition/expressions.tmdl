@@ -59,3 +59,62 @@ expression fnBcbSgs =
 	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000003
 
 	annotation PBI_ResultType = Function
+
+expression UrlBaseBrapi = "https://brapi.dev" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000004
+
+	annotation PBI_ResultType = Text
+
+expression BrapiToken = "" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000005
+
+	annotation PBI_ResultType = Text
+
+/// Tickers do Ibovespa (composição B3). Atualizar a cada rebalanceamento trimestral.
+expression IbovTickers = "ABEV3,ALOS3,ASAI3,AURE3,AZUL4,AZZA3,B3SA3,BBAS3,BBDC3,BBDC4,BBSE3,BEEF3,BPAC11,BRAP4,BRAV3,BRFS3,BRKM5,CMIG4,CMIN3,COGN3,CPFE3,CPLE6,CRFB3,CSAN3,CSNA3,CVCB3,CXSE3,CYRE3,EGIE3,ELET3,ELET6,EMBR3,ENGI11,ENEV3,EQTL3,FLRY3,GGBR4,GOAU4,HAPV3,HYPE3,IGTI11,IRBR3,ISAE4,ITSA4,ITUB4,KLBN11,LREN3,MGLU3,MRFG3,MRVE3,MULT3,NATU3,PCAR3,PETR3,PETR4,PETZ3,POMO4,PRIO3,PSSA3,RADL3,RAIL3,RAIZ4,RDOR3,RECV3,RENT3,SANB11,SBSP3,SLCE3,SMTO3,STBP3,SUZB3,TAEE11,TIMS3,TOTS3,UGPA3,USIM5,VALE3,VAMO3,VBBR3,VIVA3,VIVT3,WEGE3,YDUQ3" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000006
+
+	annotation PBI_ResultType = Text
+
+expression fnBrapiProventos =
+		let
+		    fnBrapiProventos = (ticker as text) as table =>
+		        let
+		            resp = Web.Contents(
+		                UrlBaseBrapi,
+		                [
+		                    RelativePath = "api/quote/" & ticker,
+		                    Query = [range = "1y", dividends = "true", token = BrapiToken]
+		                ]
+		            ),
+		            json = try Json.Document(resp) otherwise null,
+		            resultado = if json = null then null else try json[results]{0} otherwise null,
+		            divs = if resultado = null then null else try resultado[dividendsData][cashDividends] otherwise null,
+		            vazio = #table(type table [ticker = text, data_pagamento = date, valor = number, tipo = text], {}),
+		            tbl =
+		                if divs = null or not (divs is list) or List.IsEmpty(divs) then
+		                    vazio
+		                else
+		                    let
+		                        recs = Table.FromRecords(divs),
+		                        comTicker = Table.AddColumn(recs, "ticker", each ticker, type text),
+		                        sel = Table.SelectColumns(comTicker, {"ticker", "paymentDate", "rate", "label"}, MissingField.UseNull),
+		                        ren = Table.RenameColumns(sel, {{"paymentDate", "data_pagamento"}, {"rate", "valor"}, {"label", "tipo"}}),
+		                        tipos = Table.TransformColumns(
+		                            ren,
+		                            {
+		                                {"data_pagamento", each try Date.FromText(Text.Start(_, 10), [Format="yyyy-MM-dd", Culture="en-US"]) otherwise null, type date},
+		                                {"valor", each try Number.From(_) otherwise null, type number},
+		                                {"tipo", each if _ <> null and (Text.Contains(Text.Upper(_), "JRS") or Text.Contains(Text.Upper(_), "JCP") or Text.Contains(Text.Upper(_), "CAPITAL")) then "JCP" else "Dividendo", type text}
+		                            }
+		                        ),
+		                        semNulos = Table.SelectRows(tipos, each [data_pagamento] <> null and [valor] <> null)
+		                    in
+		                        semNulos
+		        in
+		            tbl
+		in
+		    fnBrapiProventos
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000007
+
+	annotation PBI_ResultType = Function
