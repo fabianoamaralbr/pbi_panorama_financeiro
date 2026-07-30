@@ -52,6 +52,25 @@ table _Medidas
 		displayFolder: 03. Estatística
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000008
 
+	measure 'Proventos 12m' =
+			CALCULATE(
+			    SUM(f_proventos[valor]),
+			    f_proventos[data_pagamento] >= TODAY() - 365
+			)
+		formatString: #,0.00
+		displayFolder: 04. Dividendos
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000009
+
+	measure 'Preço Atual Ação' = SELECTEDVALUE(d_empresa[preco_atual])
+		formatString: #,0.00
+		displayFolder: 04. Dividendos
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000010
+
+	measure 'Dividend Yield 12m' = DIVIDE([Proventos 12m], [Preço Atual Ação])
+		formatString: 0.00%
+		displayFolder: 04. Dividendos
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000011
+
 	partition _Medidas = m
 		mode: import
 		source =
