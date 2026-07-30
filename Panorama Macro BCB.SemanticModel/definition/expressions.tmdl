@@ -125,3 +125,32 @@ expression fnYahooProventos =
 
 	annotation PBI_ResultType = Function
 
+expression fnBrapiQuote =
+		let
+		    fnBrapiQuote = (ticker as text) as table =>
+		        let
+		            resp = Web.Contents(
+		                UrlBaseBrapi,
+		                [
+		                    RelativePath = "api/quote/" & ticker,
+		                    Query = [token = BrapiToken]
+		                ]
+		            ),
+		            json = try Json.Document(resp) otherwise null,
+		            r = if json = null then null else try json[results]{0} otherwise null,
+		            linha = [
+		                ticker = ticker,
+		                nome = if r = null then null else try r[longName] otherwise (try r[shortName] otherwise null),
+		                preco_atual = if r = null then null else try r[regularMarketPrice] otherwise null,
+		                pl = if r = null then null else try r[priceEarnings] otherwise null,
+		                min_52s = if r = null then null else try r[fiftyTwoWeekLow] otherwise null,
+		                max_52s = if r = null then null else try r[fiftyTwoWeekHigh] otherwise null
+		            ],
+		            tbl = Table.FromRecords({linha})
+		        in
+		            tbl
+		in
+		    fnBrapiQuote
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000010
+
+	annotation PBI_ResultType = Function

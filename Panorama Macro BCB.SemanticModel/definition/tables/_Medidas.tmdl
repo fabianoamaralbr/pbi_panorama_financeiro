@@ -42,12 +42,12 @@ table _Medidas
 		displayFolder: 03. Estatística
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000006
 
-	measure 'Mínimo' = MIN(f_indicadores[valor])
+	measure Mínimo = MIN(f_indicadores[valor])
 		formatString: #,0.00
 		displayFolder: 03. Estatística
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000007
 
-	measure 'Máximo' = MAX(f_indicadores[valor])
+	measure Máximo = MAX(f_indicadores[valor])
 		formatString: #,0.00
 		displayFolder: 03. Estatística
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000008
@@ -71,6 +71,34 @@ table _Medidas
 		displayFolder: 04. Dividendos
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000011
 
+	measure 'Dividendo Mensal por Ação' = DIVIDE([Proventos 12m], 12)
+		formatString: #,0.00
+		displayFolder: 05. Ação
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000012
+
+	measure 'P/L' = SELECTEDVALUE(d_empresa[pl])
+		formatString: #,0.00
+		displayFolder: 05. Ação
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000013
+
+	measure 'Posição 52 Semanas' =
+			VAR _preco = [Preço Atual Ação]
+			VAR _min = SELECTEDVALUE(d_empresa[min_52s])
+			VAR _max = SELECTEDVALUE(d_empresa[max_52s])
+			RETURN
+			    DIVIDE(_preco - _min, _max - _min)
+		formatString: 0.0%
+		displayFolder: 05. Ação
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000014
+
+	column 'Coluna 1'
+		dataType: string
+		lineageTag: a04a5884-0ea5-4950-8c47-3befafd11097
+		summarizeBy: none
+		sourceColumn: Coluna 1
+
+		annotation SummarizationSetBy = Automatic
+
 	partition _Medidas = m
 		mode: import
 		source =
@@ -81,3 +109,4 @@ table _Medidas
 				    #"Tipo Alterado"
 
 	annotation PBI_ResultType = Table
+

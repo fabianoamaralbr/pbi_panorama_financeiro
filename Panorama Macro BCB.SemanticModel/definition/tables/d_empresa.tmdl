@@ -34,24 +34,50 @@ table d_empresa
 
 		annotation SummarizationSetBy = Automatic
 
+	column pl
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000006
+		summarizeBy: none
+		sourceColumn: pl
+
+		annotation SummarizationSetBy = Automatic
+
+	column min_52s
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000007
+		summarizeBy: none
+		sourceColumn: min_52s
+
+		annotation SummarizationSetBy = Automatic
+
+	column max_52s
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000008
+		summarizeBy: none
+		sourceColumn: max_52s
+
+		annotation SummarizationSetBy = Automatic
+
 	partition d_empresa = m
 		mode: import
 		source =
 				let
-				    Alvo = List.Transform(Text.Split(IbovTickers, ","), each Text.Trim(_)),
-				    resp = Web.Contents(
-				        UrlBaseBrapi,
-				        [RelativePath = "api/quote/list", Query = [token = BrapiToken, limit = "1000"]]
-				    ),
-				    json = Json.Document(resp),
-				    stocks = json[stocks],
-				    tbl = Table.FromRecords(stocks),
-				    sel = Table.SelectColumns(tbl, {"stock", "name", "sector", "close"}, MissingField.UseNull),
-				    filtro = Table.SelectRows(sel, each List.Contains(Alvo, [stock])),
-				    ren = Table.RenameColumns(filtro, {{"stock", "ticker"}, {"name", "nome"}, {"sector", "setor"}, {"close", "preco_atual"}}),
-				    tipos = Table.TransformColumnTypes(ren, {{"ticker", type text}, {"nome", type text}, {"setor", type text}, {"preco_atual", type number}}),
-				    semDup = Table.Distinct(tipos, {"ticker"})
+				    Tickers = List.Transform(Text.Split(IbovTickers, ","), each Text.Trim(_)),
+				    Cotacoes = Table.Combine(List.Transform(Tickers, each fnBrapiQuote(_))),
+				    respList = Web.Contents(UrlBaseBrapi, [RelativePath = "api/quote/list", Query = [token = BrapiToken, limit = "1000"]]),
+				    jsonList = try Json.Document(respList) otherwise null,
+				    stocks = if jsonList = null then {} else try jsonList[stocks] otherwise {},
+				    tblList = if List.IsEmpty(stocks) then #table(type table [stock = text, sector = text], {}) else Table.FromRecords(stocks),
+				    setores = Table.SelectColumns(tblList, {"stock", "sector"}, MissingField.UseNull),
+				    setoresRen = Table.RenameColumns(setores, {{"stock", "ticker"}, {"sector", "setor"}}),
+				    juncao = Table.NestedJoin(Cotacoes, {"ticker"}, setoresRen, {"ticker"}, "s", JoinKind.LeftOuter),
+				    comSetor = Table.ExpandTableColumn(juncao, "s", {"setor"}, {"setor"}),
+				    tipos = Table.TransformColumnTypes(comSetor, {{"ticker", type text}, {"nome", type text}, {"setor", type text}, {"preco_atual", type number}, {"pl", type number}, {"min_52s", type number}, {"max_52s", type number}}),
+				    ordem = Table.SelectColumns(tipos, {"ticker", "nome", "setor", "preco_atual", "pl", "min_52s", "max_52s"})
 				in
-				    semDup
+				    ordem
 
 	annotation PBI_ResultType = Table
