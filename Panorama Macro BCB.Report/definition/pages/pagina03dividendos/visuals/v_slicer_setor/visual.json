@@ -1,0 +1,28 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "v_slicer_setor",
+  "position": { "x": 40, "y": 100, "z": 0, "height": 520, "width": 300, "tabOrder": 1 },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": { "SourceRef": { "Entity": "d_empresa" } },
+                  "Property": "setor"
+                }
+              },
+              "queryRef": "d_empresa.setor",
+              "nativeQueryRef": "setor",
+              "active": true
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
