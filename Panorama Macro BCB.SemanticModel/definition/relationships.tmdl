@@ -5,3 +5,11 @@ relationship b1a7e0c2-6001-4aaa-8bbb-000000000001
 relationship b1a7e0c2-6001-4aaa-8bbb-000000000002
 	fromColumn: f_indicadores.data
 	toColumn: d_calendario.data
+
+relationship b1a7e0c2-6001-4aaa-8bbb-000000000003
+	fromColumn: f_proventos.ticker
+	toColumn: d_empresa.ticker
+
+relationship b1a7e0c2-6001-4aaa-8bbb-000000000004
+	fromColumn: f_proventos.data_pagamento
+	toColumn: d_calendario.data
