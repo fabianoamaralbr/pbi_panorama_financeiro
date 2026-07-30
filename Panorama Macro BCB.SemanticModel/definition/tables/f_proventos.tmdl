@@ -42,10 +42,11 @@ table f_proventos
 		source =
 				let
 				    Tickers = List.Transform(Text.Split(IbovTickers, ","), each Text.Trim(_)),
-				    Tabelas = List.Transform(Tickers, each fnBrapiProventos(_)),
+				    Tabelas = List.Transform(Tickers, each fnYahooProventos(_)),
 				    Combinado = Table.Combine(Tabelas),
 				    Tipos = Table.TransformColumnTypes(Combinado, {{"ticker", type text}, {"data_pagamento", type date}, {"valor", type number}, {"tipo", type text}})
 				in
 				    Tipos
 
-	annotation PBI_ResultType = Table
+	annotation PBI_ResultType = Exception
+
