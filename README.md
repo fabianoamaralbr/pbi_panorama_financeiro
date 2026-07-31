@@ -1,13 +1,27 @@
-# Panorama Macro Brasil (BCB)
+# Panorama Financeiro
 
-Dashboard de portfólio em **Power BI (PBIP/TMDL)** que consome a **API pública do
-Banco Central do Brasil** (SGS — Sistema Gerenciador de Séries Temporais) e
-apresenta um panorama macroeconômico: Selic, IPCA, câmbio, CDI, IGP-M e PIB.
+Dashboard de portfólio em **Power BI (PBIP/TMDL)** que reúne, num só modelo, dois
+domínios de dados públicos do mercado brasileiro:
 
-## Fonte de dados
+1. **Macro Brasil (BCB/SGS)** — Selic, CDI, IPCA, IGP-M, câmbio e PIB, via API do
+   Banco Central.
+2. **Ações do Ibovespa** — dividendos, preço, P/L e faixa de 52 semanas das ações do
+   índice, via brapi e Yahoo Finance.
 
-API pública, sem autenticação:
-`https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados?formato=json`
+O projeto começou como um panorama puramente macroeconômico e foi **ampliado** para
+cobrir também renda variável, tornando-se um panorama financeiro mais completo.
+
+## Fontes de dados
+
+Todas públicas, sem dados sensíveis.
+
+| Domínio | Fonte | Autenticação |
+|---|---|---|
+| Macro (séries temporais) | BCB SGS — `https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados?formato=json` | Nenhuma |
+| Ações — preço, P/L, setor | [brapi.dev](https://brapi.dev) — `/api/quote/{ticker}` e `/api/quote/list` | Token free |
+| Ações — dividendos/JCP | Yahoo Finance — `query1.finance.yahoo.com/v8/finance/chart/{ticker}.SA?range=1y&events=div` | Nenhuma |
+
+### Séries macro (BCB SGS)
 
 | Código | Indicador            | Frequência |
 |-------:|----------------------|------------|
@@ -19,36 +33,65 @@ API pública, sem autenticação:
 | 1      | Dólar PTAX (venda)   | Diária     |
 | 4380   | PIB mensal           | Mensal     |
 
-## Modelo (star schema)
+## Modelo
+
+Dois conjuntos de tabelas (star schema) no mesmo modelo semântico:
 
 ```
-d_indicador 1 ── * f_indicadores * ── 1 d_calendario
+Macro:   d_indicador 1 ── * f_indicadores * ── 1 d_calendario
+Ações:   d_empresa   1 ── * f_proventos        (chave: ticker)
 ```
 
+**Macro**
 - `d_indicador` — catálogo de séries (código → nome, unidade, tipo).
 - `f_indicadores` — fato longo (`data`, `codigo`, `valor`) alimentado pela função M
   `fnBcbSgs`, que fatia séries diárias em janelas de ≤10 anos (limite da API).
 - `d_calendario` — tabela de datas gerada em M.
-- `_Medidas` — medidas DAX genéricas (Valor Atual, Variações, Média, Mín, Máx).
+
+**Ações**
+- `d_empresa` — dimensão por ação (`ticker`, `nome`, `setor`, `preco_atual`, `pl`,
+  `min_52s`, `max_52s`), montada pela função M `fnBrapiQuote` (uma chamada brapi por
+  ticker) com o setor vindo de `/api/quote/list`.
+- `f_proventos` — fato de dividendos/JCP (`ticker`, `data_pagamento`, `valor`, `tipo`),
+  alimentado pela função M `fnYahooProventos` (Yahoo Finance).
+
+`_Medidas` reúne as medidas DAX (Valor Atual, Variações, Média, Mín, Máx, Dividend
+Yield 12m, etc.).
 
 ## Como usar
 
-1. Abra `Panorama Macro BCB.pbip` no Power BI Desktop (versão com suporte a PBIP/TMDL).
-2. Ao abrir, defina a privacidade da fonte `api.bcb.gov.br` como **Público**.
-3. Clique em **Atualizar** para buscar os dados ao vivo da API.
+1. Abra `Panorama Financeiro.pbip` no Power BI Desktop (versão com suporte a PBIP/TMDL).
+2. Ao abrir, defina a privacidade das fontes (`api.bcb.gov.br`, `brapi.dev`,
+   `query1.finance.yahoo.com`) como **Público**.
+3. Preencha o parâmetro `BrapiToken` (veja abaixo).
+4. Clique em **Atualizar** para buscar os dados ao vivo das APIs.
 
 ## Parâmetros
 
-- `DataInicial` (padrão `2015-01-01`) — início do histórico.
-- `UrlBaseBCB` (padrão `https://api.bcb.gov.br`).
+| Parâmetro | Padrão | Descrição |
+|---|---|---|
+| `DataInicial` | `2015-01-01` | Início do histórico das séries macro. |
+| `UrlBaseBCB` | `https://api.bcb.gov.br` | Base da API do Banco Central. |
+| `UrlBaseBrapi` | `https://brapi.dev` | Base da API brapi. |
+| `BrapiToken` | `""` | Token free do brapi (**obrigatório** para preço/P/L/setor das ações). |
+| `IbovTickers` | carteira do índice | Lista de tickers (Ibovespa + adicionais monitorados). |
 
-Projeto sem dados sensíveis; 100% baseado em dados públicos.
+> **Nunca comite o token.** O Power BI Desktop reescreve `BrapiToken` com o valor real
+> ao salvar; zere para `""` antes de qualquer commit/push. O repositório mantém
+> `BrapiToken = ""`.
 
 ## Página "Dividendos (Ibovespa)"
 
-Lista as 15 ações do Ibovespa com maior **Dividend Yield dos últimos 12 meses** e seus setores.
+Lista as 15 ações do Ibovespa com maior **Dividend Yield dos últimos 12 meses**, com
+setor, preço, P/L e faixa de 52 semanas.
 
-- **Fonte:** API pública [brapi.dev](https://brapi.dev) — setor/preço via `/api/quote/list`, proventos via `/api/quote/{ticker}?dividends=true`.
 - **DY 12m** = (dividendos + JCP pagos nos últimos 12 meses) ÷ preço atual.
-- **Token (obrigatório):** crie um token free em https://brapi.dev/dashboard e preencha o parâmetro `BrapiToken` em *Transformar dados → Gerenciar parâmetros* no Power BI Desktop. **Nunca** comite o token — o repositório mantém `BrapiToken = ""`.
-- **Composição do Ibovespa:** o parâmetro `IbovTickers` traz a carteira atual do índice. Atualize-o a cada rebalanceamento trimestral da B3.
+- **Dividendos via Yahoo Finance** (grátis, sem token): o plano free do brapi só expõe
+  proventos para tickers de sandbox (PETR4, VALE3, MGLU3, ITUB4), então os dividendos de
+  todo o universo vêm do Yahoo. Preço, P/L e setor continuam vindo do brapi.
+- **Composição do Ibovespa:** atualize o parâmetro `IbovTickers` a cada rebalanceamento
+  trimestral da B3.
+
+---
+
+Projeto de portfólio; 100% baseado em dados públicos, sem credenciais versionadas.
