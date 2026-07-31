@@ -48,5 +48,5 @@ table f_proventos
 				in
 				    Tipos
 
-	annotation PBI_ResultType = Exception
+	annotation PBI_ResultType = Table
 

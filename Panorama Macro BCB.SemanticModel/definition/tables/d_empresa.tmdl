@@ -81,3 +81,4 @@ table d_empresa
 				    ordem
 
 	annotation PBI_ResultType = Table
+

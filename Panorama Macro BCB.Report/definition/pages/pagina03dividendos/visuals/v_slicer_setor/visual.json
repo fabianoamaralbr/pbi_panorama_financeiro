@@ -1,7 +1,14 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "v_slicer_setor",
-  "position": { "x": 40, "y": 100, "z": 0, "height": 520, "width": 300, "tabOrder": 1 },
+  "position": {
+    "x": 39.8992443324937,
+    "y": 379.9496221662468,
+    "z": 0,
+    "height": 240.30226700251887,
+    "width": 300.15113350125944,
+    "tabOrder": 1000
+  },
   "visual": {
     "visualType": "slicer",
     "query": {
@@ -11,7 +18,11 @@
             {
               "field": {
                 "Column": {
-                  "Expression": { "SourceRef": { "Entity": "d_empresa" } },
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "d_empresa"
+                    }
+                  },
                   "Property": "setor"
                 }
               },
@@ -23,6 +34,31 @@
         }
       }
     },
+    "objects": {
+      "general": [
+        {
+          "properties": {}
+        }
+      ]
+    },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "f75154ae57cb39e0c80c",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "d_empresa"
+              }
+            },
+            "Property": "setor"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

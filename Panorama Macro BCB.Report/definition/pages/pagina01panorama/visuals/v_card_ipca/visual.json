@@ -1,7 +1,14 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "v_card_ipca",
-  "position": { "x": 350, "y": 110, "z": 1, "height": 140, "width": 290, "tabOrder": 1 },
+  "position": {
+    "x": 350,
+    "y": 110,
+    "z": 2000,
+    "height": 140,
+    "width": 290,
+    "tabOrder": 2000
+  },
   "visual": {
     "visualType": "cardVisual",
     "query": {
@@ -9,7 +16,16 @@
         "Data": {
           "projections": [
             {
-              "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Valor Atual" } },
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Valor Atual"
+                }
+              },
               "queryRef": "_Medidas.Valor Atual",
               "nativeQueryRef": "Valor Atual"
             }
@@ -19,29 +35,73 @@
     },
     "objects": {
       "value": [
-        { "properties": { "fontSize": { "expr": { "Literal": { "Value": "36D" } } }, "fontColor": { "solid": { "color": { "expr": { "Literal": { "Value": "'#0D4069'" } } } } } } }
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "36D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#0D4069'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "visualContainerObjects": {
       "title": [
-        { "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'IPCA 12m (%)'" } } }, "fontColor": { "solid": { "color": { "expr": { "Literal": { "Value": "'#AC844C'" } } } } } } }
-      ],
-      "border": [ { "properties": { "show": { "expr": { "Literal": { "Value": "true" } } } } } ]
-    },
-    "filterConfig": {
-      "filters": [
         {
-          "name": "f_v_card_ipca",
-          "field": { "Column": { "Expression": { "SourceRef": { "Entity": "d_indicador" } }, "Property": "codigo" } },
-          "type": "Categorical",
-          "filter": {
-            "Version": 2,
-            "From": [ { "Name": "d", "Entity": "d_indicador", "Type": 0 } ],
-            "Where": [
-              { "Condition": { "In": { "Expressions": [ { "Column": { "Expression": { "SourceRef": { "Source": "d" } }, "Property": "codigo" } } ], "Values": [ [ { "Literal": { "Value": "'13522'" } } ] ] } } }
-            ]
-          },
-          "howCreated": "User"
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'IPCA 12m (%)'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#AC844C'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
         }
       ]
     },

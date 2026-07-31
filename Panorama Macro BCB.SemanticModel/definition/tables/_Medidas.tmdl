@@ -76,7 +76,7 @@ table _Medidas
 		displayFolder: 05. Ação
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000012
 
-	measure 'P/L' = SELECTEDVALUE(d_empresa[pl])
+	measure P/L = SELECTEDVALUE(d_empresa[pl])
 		formatString: #,0.00
 		displayFolder: 05. Ação
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000013
