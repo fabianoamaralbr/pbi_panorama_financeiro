@@ -1,0 +1,52 @@
+table f_proventos
+	lineageTag: b1a7e0c2-9001-4aaa-8bbb-000000000001
+
+	column ticker
+		dataType: string
+		lineageTag: b1a7e0c2-9001-4aaa-8bbb-000000000002
+		summarizeBy: none
+		sourceColumn: ticker
+
+		annotation SummarizationSetBy = Automatic
+
+	column data_pagamento
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: b1a7e0c2-9001-4aaa-8bbb-000000000003
+		summarizeBy: none
+		sourceColumn: data_pagamento
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column valor
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b1a7e0c2-9001-4aaa-8bbb-000000000004
+		summarizeBy: sum
+		sourceColumn: valor
+
+		annotation SummarizationSetBy = Automatic
+
+	column tipo
+		dataType: string
+		lineageTag: b1a7e0c2-9001-4aaa-8bbb-000000000005
+		summarizeBy: none
+		sourceColumn: tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	partition f_proventos = m
+		mode: import
+		source =
+				let
+				    Tickers = List.Transform(Text.Split(IbovTickers, ","), each Text.Trim(_)),
+				    Tabelas = List.Transform(Tickers, each fnYahooProventos(_)),
+				    Combinado = Table.Combine(Tabelas),
+				    Tipos = Table.TransformColumnTypes(Combinado, {{"ticker", type text}, {"data_pagamento", type date}, {"valor", type number}, {"tipo", type text}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

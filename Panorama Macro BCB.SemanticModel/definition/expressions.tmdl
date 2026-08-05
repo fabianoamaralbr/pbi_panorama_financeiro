@@ -3,6 +3,8 @@ expression UrlBaseBCB = "https://api.bcb.gov.br" meta [IsParameterQuery=true, Ty
 
 	annotation PBI_ResultType = Text
 
+	annotation PBI_NavigationStepName = Navegação
+
 expression DataInicial = "2015-01-01" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000002
 
@@ -59,3 +61,99 @@ expression fnBcbSgs =
 	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000003
 
 	annotation PBI_ResultType = Function
+
+expression UrlBaseBrapi = "https://brapi.dev/" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000004
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navegação
+
+expression BrapiToken = "" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000005
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navegação
+
+/// Tickers monitorados (Ibovespa + adicionais). Atualizar conforme necessário.
+expression IbovTickers = "ABEV3,ALOS3,ASAI3,AURE3,AZUL4,AZZA3,B3SA3,BBAS3,BBDC3,BBDC4,BBSE3,BEEF3,BPAC11,BRAP4,BRAV3,BRFS3,BRKM5,CMIG4,CMIN3,COGN3,CPFE3,CPLE6,CRFB3,CSAN3,CSNA3,CVCB3,CXSE3,CYRE3,EGIE3,ELET3,ELET6,EMBR3,ENGI11,ENEV3,EQTL3,FLRY3,GGBR4,GOAU4,HAPV3,HYPE3,IGTI11,IRBR3,ISAE4,ITSA4,ITUB4,KLBN11,LREN3,MGLU3,MRFG3,MRVE3,MULT3,NATU3,PCAR3,PETR3,PETR4,PETZ3,POMO4,PRIO3,PSSA3,RADL3,RAIL3,RAIZ4,RDOR3,RECV3,RENT3,SANB11,SBSP3,SLCE3,SMTO3,STBP3,SUZB3,TAEE11,TIMS3,TOTS3,UGPA3,USIM5,VALE3,VAMO3,VBBR3,VIVA3,VIVT3,WEGE3,YDUQ3,ALLD3,CSMG3,ODPV3,KEPL3,SAPR4" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000006
+
+	annotation PBI_ResultType = Text
+
+expression UrlBaseYahoo = "https://query1.finance.yahoo.com" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000008
+
+	annotation PBI_ResultType = Text
+
+expression fnYahooProventos =
+		let
+		    fnYahooProventos = (ticker as text) as table =>
+		        let
+		            resp = Web.Contents(
+		                UrlBaseYahoo,
+		                [
+		                    RelativePath = "v8/finance/chart/" & ticker & ".SA",
+		                    Query = [range = "1y", interval = "1d", events = "div"],
+		                    Headers = [#"User-Agent" = "Mozilla/5.0"]
+		                ]
+		            ),
+		            json = try Json.Document(resp) otherwise null,
+		            resultado = if json = null then null else try json[chart][result]{0} otherwise null,
+		            divsRec = if resultado = null then null else try resultado[events][dividends] otherwise null,
+		            vazio = #table(type table [ticker = text, data_pagamento = date, valor = number, tipo = text], {}),
+		            tbl =
+		                if divsRec = null then
+		                    vazio
+		                else
+		                    let
+		                        lista = Record.FieldValues(divsRec),
+		                        recs = Table.FromRecords(lista),
+		                        comTicker = Table.AddColumn(recs, "ticker", each ticker, type text),
+		                        comData = Table.AddColumn(comTicker, "data_pagamento", each try Date.From(#datetime(1970, 1, 1, 0, 0, 0) + #duration(0, 0, 0, [date])) otherwise null, type date),
+		                        comTipo = Table.AddColumn(comData, "tipo", each "Provento", type text),
+		                        ren = Table.RenameColumns(comTipo, {{"amount", "valor"}}),
+		                        sel = Table.SelectColumns(ren, {"ticker", "data_pagamento", "valor", "tipo"}),
+		                        tipos = Table.TransformColumnTypes(sel, {{"valor", type number}}),
+		                        semNulos = Table.SelectRows(tipos, each [data_pagamento] <> null and [valor] <> null)
+		                    in
+		                        semNulos
+		        in
+		            tbl
+		in
+		    fnYahooProventos
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000009
+
+	annotation PBI_ResultType = Function
+
+expression fnBrapiQuote =
+		let
+		    fnBrapiQuote = (ticker as text) as table =>
+		        let
+		            resp = Web.Contents(
+		                UrlBaseBrapi,
+		                [
+		                    RelativePath = "api/quote/" & ticker,
+		                    Query = [token = BrapiToken]
+		                ]
+		            ),
+		            json = try Json.Document(resp) otherwise null,
+		            r = if json = null then null else try json[results]{0} otherwise null,
+		            linha = [
+		                ticker = ticker,
+		                nome = if r = null then null else try r[longName] otherwise (try r[shortName] otherwise null),
+		                preco_atual = if r = null then null else try r[regularMarketPrice] otherwise null,
+		                pl = if r = null then null else try r[priceEarnings] otherwise null,
+		                min_52s = if r = null then null else try r[fiftyTwoWeekLow] otherwise null,
+		                max_52s = if r = null then null else try r[fiftyTwoWeekHigh] otherwise null
+		            ],
+		            tbl = Table.FromRecords({linha})
+		        in
+		            tbl
+		in
+		    fnBrapiQuote
+	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000010
+
+	annotation PBI_ResultType = Function
+

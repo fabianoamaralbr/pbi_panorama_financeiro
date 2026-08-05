@@ -1,0 +1,9 @@
+{
+  "pipeline": "dq_check_panorama",
+  "agent": "quality",
+  "status": "warn",
+  "elapsed_seconds": 6.83,
+  "checks_total": 14,
+  "checks_error": 0,
+  "checks_warn": 1
+}

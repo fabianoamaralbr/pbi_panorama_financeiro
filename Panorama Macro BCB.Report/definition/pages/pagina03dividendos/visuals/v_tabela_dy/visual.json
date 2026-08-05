@@ -1,0 +1,241 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "v_tabela_dy",
+  "position": {
+    "x": 360,
+    "y": 100,
+    "z": 2000,
+    "height": 250,
+    "width": 880,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "d_empresa"
+                    }
+                  },
+                  "Property": "nome"
+                }
+              },
+              "queryRef": "d_empresa.nome",
+              "nativeQueryRef": "nome"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "d_empresa"
+                    }
+                  },
+                  "Property": "setor"
+                }
+              },
+              "queryRef": "d_empresa.setor",
+              "nativeQueryRef": "setor"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Preço Atual Ação"
+                }
+              },
+              "queryRef": "_Medidas.Preço Atual Ação",
+              "nativeQueryRef": "Preço Atual Ação"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Dividend Yield 12m"
+                }
+              },
+              "queryRef": "_Medidas.Dividend Yield 12m",
+              "nativeQueryRef": "Dividend Yield 12m"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Dividendo Mensal por Ação"
+                }
+              },
+              "queryRef": "_Medidas.Dividendo Mensal por Ação",
+              "nativeQueryRef": "Dividendo Mensal por Ação"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "P/L"
+                }
+              },
+              "queryRef": "_Medidas.P/L",
+              "nativeQueryRef": "P/L"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Posição 52 Semanas"
+                }
+              },
+              "queryRef": "_Medidas.Posição 52 Semanas",
+              "nativeQueryRef": "Posição 52 Semanas"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Medidas"
+                  }
+                },
+                "Property": "Dividendo Mensal por Ação"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "bcada1f2494ea018c24e",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "P/L"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "3222db004553d90d5494",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "d_empresa"
+              }
+            },
+            "Property": "nome"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "c20922457310be1ab178",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "d_empresa"
+              }
+            },
+            "Property": "setor"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "0e5c3bc9cbdba97a65ac",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Preço Atual Ação"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "5a1ac70024368da01cd7",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Dividend Yield 12m"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "65ebaea744d7e890a506",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Dividendo Mensal por Ação"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "7d9a5548840b31cdbb79",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Posição 52 Semanas"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

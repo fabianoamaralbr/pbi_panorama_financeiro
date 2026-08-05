@@ -1,23 +1,72 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "v_card_var12",
-  "position": { "x": 870, "y": 250, "z": 2, "height": 100, "width": 370, "tabOrder": 2 },
+  "position": {
+    "x": 870,
+    "y": 250,
+    "z": 5000,
+    "height": 100,
+    "width": 370,
+    "tabOrder": 5000
+  },
   "visual": {
     "visualType": "cardVisual",
     "query": {
       "queryState": {
         "Data": {
           "projections": [
-            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Variação 12 Meses" } }, "queryRef": "_Medidas.Variação 12 Meses", "nativeQueryRef": "Variação 12 Meses" }
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Variação 12 Meses"
+                }
+              },
+              "queryRef": "_Medidas.Variação 12 Meses",
+              "nativeQueryRef": "Variação 12 Meses"
+            }
           ]
         }
       }
     },
     "visualContainerObjects": {
       "title": [
-        { "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'Variação 12 Meses'" } } } } }
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Variação 12 Meses'"
+                }
+              }
+            }
+          }
+        }
       ],
-      "border": [ { "properties": { "show": { "expr": { "Literal": { "Value": "true" } } } } } ]
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "drillFilterOtherVisuals": true
   }

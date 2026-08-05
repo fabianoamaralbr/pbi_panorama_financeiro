@@ -1,0 +1,82 @@
+{
+  "pipeline": "dq_check_panorama",
+  "agent": "quality",
+  "status": "warn",
+  "timestamp": "2026-08-04T20:44:20.775840+00:00",
+  "elapsed_seconds": 6.83,
+  "checks_total": 14,
+  "checks_error": 0,
+  "checks_warn": 1,
+  "checks": [
+    {
+      "check": "macro.432.frescor",
+      "status": "ok",
+      "detail": "Selic Meta: última obs 2026-08-05 = 14.25"
+    },
+    {
+      "check": "macro.12.frescor",
+      "status": "ok",
+      "detail": "CDI: última obs 2026-08-03 = 0.052531"
+    },
+    {
+      "check": "macro.433.frescor",
+      "status": "ok",
+      "detail": "IPCA mensal: última obs 2026-06-01 = 0.16"
+    },
+    {
+      "check": "macro.13522.frescor",
+      "status": "ok",
+      "detail": "IPCA 12m: última obs 2026-06-01 = 4.64"
+    },
+    {
+      "check": "macro.189.frescor",
+      "status": "ok",
+      "detail": "IGP-M mensal: última obs 2026-07-01 = -1.16"
+    },
+    {
+      "check": "macro.1.frescor",
+      "status": "ok",
+      "detail": "Dolar PTAX: última obs 2026-08-04 = 5.1053"
+    },
+    {
+      "check": "macro.4380.frescor",
+      "status": "ok",
+      "detail": "PIB mensal: última obs 2026-06-01 = 1135083.0"
+    },
+    {
+      "check": "macro.series_presentes",
+      "status": "ok",
+      "detail": "7/7 séries presentes"
+    },
+    {
+      "check": "acoes.brapi",
+      "status": "warn",
+      "detail": "BRAPI_TOKEN ausente — checks de d_empresa pulados"
+    },
+    {
+      "check": "proventos.PETR4.dy",
+      "status": "ok",
+      "detail": "DY 12m = 7.03%"
+    },
+    {
+      "check": "proventos.VALE3.dy",
+      "status": "ok",
+      "detail": "DY 12m = 7.18%"
+    },
+    {
+      "check": "proventos.ITUB4.dy",
+      "status": "ok",
+      "detail": "DY 12m = 8.20%"
+    },
+    {
+      "check": "proventos.BBAS3.dy",
+      "status": "ok",
+      "detail": "DY 12m = 2.62%"
+    },
+    {
+      "check": "proventos.WEGE3.dy",
+      "status": "ok",
+      "detail": "DY 12m = 4.08%"
+    }
+  ]
+}

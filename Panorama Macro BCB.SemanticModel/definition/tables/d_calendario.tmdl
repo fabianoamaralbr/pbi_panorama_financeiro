@@ -3,8 +3,8 @@ table d_calendario
 	dataCategory: Time
 
 	column data
-		isKey
 		dataType: dateTime
+		isKey
 		formatString: Short Date
 		lineageTag: b1a7e0c2-5001-4aaa-8bbb-000000000002
 		summarizeBy: none
@@ -86,3 +86,4 @@ table d_calendario
 				    MesAno
 
 	annotation PBI_ResultType = Table
+

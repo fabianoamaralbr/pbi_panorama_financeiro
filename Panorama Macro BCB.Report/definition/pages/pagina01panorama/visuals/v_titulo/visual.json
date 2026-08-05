@@ -1,7 +1,14 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "v_titulo",
-  "position": { "x": 40, "y": 24, "z": 0, "height": 60, "width": 1200, "tabOrder": 0 },
+  "position": {
+    "x": 40,
+    "y": 24,
+    "z": 0,
+    "height": 60,
+    "width": 1200,
+    "tabOrder": 0
+  },
   "visual": {
     "visualType": "textbox",
     "objects": {
@@ -11,7 +18,14 @@
             "paragraphs": [
               {
                 "textRuns": [
-                  { "value": "Panorama Macroeconômico do Brasil", "textStyle": { "fontSize": "28px", "fontWeight": "bold", "color": "#0D4069" } }
+                  {
+                    "value": "Panorama Macroeconômico do Brasil",
+                    "textStyle": {
+                      "fontSize": "28px",
+                      "fontWeight": "bold",
+                      "color": "#0D4069"
+                    }
+                  }
                 ]
               }
             ]

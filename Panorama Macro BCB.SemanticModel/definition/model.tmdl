@@ -9,11 +9,14 @@ model Model
 
 annotation PBI_ProTooling = ["DevMode"]
 
-annotation PBI_QueryOrder = ["UrlBaseBCB","DataInicial","fnBcbSgs","d_indicador","f_indicadores","d_calendario","_Medidas"]
+annotation PBI_QueryOrder = ["UrlBaseBCB","DataInicial","fnBcbSgs","UrlBaseBrapi","BrapiToken","IbovTickers","UrlBaseYahoo","fnYahooProventos","fnBrapiQuote","d_indicador","f_indicadores","d_calendario","d_empresa","f_proventos","_Medidas"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
 
 ref table d_indicador
 ref table f_indicadores
 ref table d_calendario
 ref table _Medidas
+ref table d_empresa
+ref table f_proventos
 
-ref cultureInfo pt-BR

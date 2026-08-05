@@ -1,0 +1,46 @@
+# Data contract — domínio Macro (BCB/SGS)
+# Fonte: api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados
+# Consumido por: f_indicadores (via fnBcbSgs) + medidas dedicadas (Selic Meta, IPCA 12m, ...)
+dataset: f_indicadores
+owner: data-squad
+domain: macro
+description: Séries temporais de indicadores macroeconômicos do Banco Central (SGS).
+
+columns:
+  - name: codigo
+    type: string
+    tests: [not_null]
+    accepted_values: ["432", "12", "433", "13522", "189", "1", "4380"]
+  - name: data
+    type: date
+    tests: [not_null]
+  - name: valor
+    type: double
+    tests: [not_null]
+
+checks:
+  # Cada série deve ter dados e estar razoavelmente fresca.
+  - id: series_presentes
+    description: Todas as 7 séries esperadas retornam ao menos 1 observação.
+    expect: distinct(codigo) == 7
+  - id: frescor_series_diarias
+    description: Séries diárias (Selic/CDI/PTAX) com dado nos últimos 10 dias úteis.
+    applies_to: ["432", "12", "1"]
+    expect: max(data) >= today() - 15 days
+  - id: frescor_series_mensais
+    description: Séries mensais (IPCA/IGP-M/PIB) com dado nos últimos 70 dias.
+    applies_to: ["433", "13522", "189", "4380"]
+    expect: max(data) >= today() - 70 days
+  - id: dominio_taxas
+    description: Taxas em faixa plausível (evita erro de escala/parse).
+    applies_to: ["432", "13522", "189"]
+    expect: -50 <= valor <= 100        # % — Selic meta, IPCA 12m, IGP-M mensal
+  - id: dominio_ptax
+    description: Dólar PTAX venda em faixa plausível.
+    applies_to: ["1"]
+    expect: 1 <= valor <= 20           # R$/US$
+
+freshness:
+  column: data
+  warn_after: 15 days
+  error_after: 45 days

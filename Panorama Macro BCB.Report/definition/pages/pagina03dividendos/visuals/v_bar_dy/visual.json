@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "v_bar_dy",
+  "position": {
+    "x": 360,
+    "y": 360,
+    "z": 3000,
+    "height": 260,
+    "width": 880,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "barChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "d_empresa"
+                    }
+                  },
+                  "Property": "nome"
+                }
+              },
+              "queryRef": "d_empresa.nome",
+              "nativeQueryRef": "nome",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Dividend Yield 12m"
+                }
+              },
+              "queryRef": "_Medidas.Dividend Yield 12m",
+              "nativeQueryRef": "Dividend Yield 12m"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

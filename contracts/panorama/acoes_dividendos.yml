@@ -1,0 +1,71 @@
+# Data contract — domínio Ações (brapi.dev + Yahoo Finance)
+# Consumido por: d_empresa (fnBrapiQuote) e f_proventos (fnYahooProventos)
+datasets:
+
+  - dataset: d_empresa
+    owner: data-squad
+    domain: acoes
+    description: Cadastro/cotação das ações do universo Ibovespa (preço, P/L, faixa 52s, setor).
+    columns:
+      - name: ticker
+        type: string
+        tests: [not_null, unique]
+      - name: nome
+        type: string
+        tests: [not_null]
+      - name: setor
+        type: string
+        tests: []                       # nullable — /api/quote/list pode não cobrir todos
+      - name: preco_atual
+        type: double
+        tests: []
+      - name: pl
+        type: double
+        tests: []                       # nullable — nem toda ação tem P/L (prejuízo/sem dado)
+      - name: min_52s
+        type: double
+      - name: max_52s
+        type: double
+    checks:
+      - id: cobertura_preco
+        description: Ao menos 80% dos tickers monitorados têm preço válido (falha parcial da brapi tolerada abaixo disso apenas com WARN).
+        expect: count(preco_atual is not null) / count(*) >= 0.80
+      - id: preco_positivo
+        description: Preços, quando presentes, são positivos.
+        expect: preco_atual is null or preco_atual > 0
+      - id: faixa_52s_coerente
+        description: Mínima de 52 semanas não excede a máxima.
+        expect: min_52s is null or max_52s is null or min_52s <= max_52s
+
+  - dataset: f_proventos
+    owner: data-squad
+    domain: acoes
+    description: Proventos (dividendos/JCP) dos últimos 12 meses por ticker.
+    columns:
+      - name: ticker
+        type: string
+        tests: [not_null]
+      - name: data_pagamento
+        type: date
+        tests: [not_null]
+      - name: valor
+        type: double
+        tests: [not_null]
+      - name: tipo
+        type: string
+        tests: [not_null]
+    checks:
+      - id: valor_positivo
+        description: Todo provento é estritamente positivo.
+        expect: valor > 0
+      - id: janela_12m
+        description: Proventos dentro da janela de ~13 meses (margem de folga).
+        expect: data_pagamento >= today() - 400 days
+
+  # Regra cruzada (medida DAX "Dividend Yield 12m"):
+  - dataset: cross_check
+    domain: acoes
+    checks:
+      - id: dy_plausivel
+        description: Dividend Yield 12m em faixa plausível (0% a 30%). Acima disso indica preço nulo/errado ou provento duplicado.
+        expect: 0 <= dividend_yield_12m <= 0.30

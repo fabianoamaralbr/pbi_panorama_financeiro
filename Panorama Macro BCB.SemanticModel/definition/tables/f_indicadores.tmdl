@@ -41,3 +41,4 @@ table f_indicadores
 				    Tipos
 
 	annotation PBI_ResultType = Table
+

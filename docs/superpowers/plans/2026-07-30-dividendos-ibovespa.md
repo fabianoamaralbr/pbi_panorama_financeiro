@@ -308,7 +308,7 @@ annotation PBI_QueryOrder = ["UrlBaseBCB","DataInicial","fnBcbSgs","UrlBaseBrapi
 
 - [ ] **Step 2: Adicionar `ref table` das novas tabelas em `model.tmdl`**
 
-Após a linha `ref table d_calendario` (linha 18), insira duas linhas para que o bloco fique:
+Após a linha `ref table d_calendario` (linha 16), insira duas linhas. Preserve a linha em branco e o `ref cultureInfo pt-BR` no fim do arquivo. O bloco final deve ficar:
 
 ```
 ref table d_indicador
@@ -317,6 +317,8 @@ ref table d_calendario
 ref table d_empresa
 ref table f_proventos
 ref table _Medidas
+
+ref cultureInfo pt-BR
 ```
 
 - [ ] **Step 3: Adicionar os 2 relacionamentos em `relationships.tmdl`**
@@ -351,9 +353,9 @@ git commit -m "feat(model): registrar d_empresa/f_proventos e relacionamentos"
 **Files:**
 - Modify: `Panorama Macro BCB.SemanticModel/definition/tables/_Medidas.tmdl`
 
-- [ ] **Step 1: Inserir 3 medidas antes do bloco `column 'Coluna 1'`**
+- [ ] **Step 1: Inserir 3 medidas antes do `partition _Medidas = m`**
 
-Em `_Medidas.tmdl`, insira o bloco abaixo **entre** a medida `Máximo` (termina na linha 53) e o `column 'Coluna 1'` (linha 55):
+Em `_Medidas.tmdl`, insira o bloco abaixo **entre** a medida `Máximo` (termina na linha 53, com `lineageTag ...008`) e o `partition _Medidas = m` (linha 55):
 
 ```
 	measure 'Proventos 12m' =
@@ -378,7 +380,7 @@ Em `_Medidas.tmdl`, insira o bloco abaixo **entre** a medida `Máximo` (termina 
 
 - [ ] **Step 2: Verificar**
 
-As 3 medidas usam TAB; `Proventos 12m` referencia `f_proventos[valor]`/`[data_pagamento]` (Tarefa 3); `Preço Atual Ação` referencia `d_empresa[preco_atual]` (Tarefa 2); `Dividend Yield 12m` referencia as duas medidas anteriores pelos nomes exatos. `column 'Coluna 1'` permanece logo abaixo.
+As 3 medidas usam TAB; `Proventos 12m` referencia `f_proventos[valor]`/`[data_pagamento]` (Tarefa 3); `Preço Atual Ação` referencia `d_empresa[preco_atual]` (Tarefa 2); `Dividend Yield 12m` referencia as duas medidas anteriores pelos nomes exatos. O `partition _Medidas = m` permanece logo abaixo.
 
 - [ ] **Step 3: Commit**
 
@@ -593,6 +595,41 @@ git commit -m "feat(report): pagina Dividendos (Ibovespa)"
         }
       }
     },
+    "filterConfig": {
+      "filters": [
+        {
+          "name": "f_v_tabela_dy_topn",
+          "field": { "Column": { "Expression": { "SourceRef": { "Entity": "d_empresa" } }, "Property": "nome" } },
+          "type": "TopN",
+          "filter": {
+            "Version": 2,
+            "From": [
+              { "Name": "d", "Entity": "d_empresa", "Type": 0 },
+              { "Name": "m", "Entity": "_Medidas", "Type": 0 }
+            ],
+            "Where": [
+              {
+                "Condition": {
+                  "TopN": {
+                    "Expressions": [
+                      { "Column": { "Expression": { "SourceRef": { "Source": "d" } }, "Property": "nome" } }
+                    ],
+                    "Top": 15,
+                    "OrderBy": [
+                      {
+                        "Direction": 2,
+                        "Expression": { "Measure": { "Expression": { "SourceRef": { "Source": "m" } }, "Property": "Dividend Yield 12m" } }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "howCreated": "User"
+        }
+      ]
+    },
     "drillFilterOtherVisuals": true
   }
 }
@@ -640,6 +677,41 @@ git commit -m "feat(report): pagina Dividendos (Ibovespa)"
         }
       }
     },
+    "filterConfig": {
+      "filters": [
+        {
+          "name": "f_v_bar_dy_topn",
+          "field": { "Column": { "Expression": { "SourceRef": { "Entity": "d_empresa" } }, "Property": "nome" } },
+          "type": "TopN",
+          "filter": {
+            "Version": 2,
+            "From": [
+              { "Name": "d", "Entity": "d_empresa", "Type": 0 },
+              { "Name": "m", "Entity": "_Medidas", "Type": 0 }
+            ],
+            "Where": [
+              {
+                "Condition": {
+                  "TopN": {
+                    "Expressions": [
+                      { "Column": { "Expression": { "SourceRef": { "Source": "d" } }, "Property": "nome" } }
+                    ],
+                    "Top": 15,
+                    "OrderBy": [
+                      {
+                        "Direction": 2,
+                        "Expression": { "Measure": { "Expression": { "SourceRef": { "Source": "m" } }, "Property": "Dividend Yield 12m" } }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "howCreated": "User"
+        }
+      ]
+    },
     "drillFilterOtherVisuals": true
   }
 }
@@ -658,38 +730,33 @@ git commit -m "feat(report): visuais da pagina de dividendos (titulo, slicer, ta
 
 ---
 
-## Task 9: Aplicar Top-N=15 e finalizar no Power BI Desktop
+## Task 9: Verificar a página no Power BI Desktop (interativo)
 
-**Files:** os `visual.json` de `v_tabela_dy` e `v_bar_dy` (reescritos pelo Desktop ao salvar).
+**Files:** nenhum (verificação; o Top-N já está no JSON da Tarefa 8 via `filterConfig`).
 
-O filtro **Top N** e o **sort desc** não são mantidos como JSON manual neste repo (o report é finalizado no Desktop, igual às demais páginas). Aplique-os pela UI.
+Esta tarefa é feita **pelo usuário** no Power BI Desktop — subagentes não a executam.
 
 - [ ] **Step 1: Abrir a página**
 
-No Power BI Desktop, abra a página **Dividendos (Ibovespa)**.
+Com o modelo já atualizado (Tarefa 6), abra a página **Dividendos (Ibovespa)**.
 
-- [ ] **Step 2: Top 15 na tabela**
+- [ ] **Step 2: Conferir renderização e interação**
 
-Selecione `v_tabela_dy` → painel **Filtros** → filtro do visual em `Dividend Yield 12m` → tipo **N Principais**, **15**, "Por valor" = `Dividend Yield 12m`. Ordene a coluna `Dividend Yield 12m` em **ordem decrescente**.
+- A tabela `v_tabela_dy` mostra exatamente **15 linhas** (Empresa · Setor · DY em %), maior DY no topo.
+- O gráfico `v_bar_dy` mostra as **mesmas 15 empresas**.
+- Clicar num setor no slicer `v_slicer_setor` filtra tabela e gráfico.
+- Se o Top-N ou a ordenação não estiverem como esperado, ajuste pela UI (Filtros → N Principais = 15 por `Dividend Yield 12m`; ordenar a coluna DY desc) e salve.
 
-- [ ] **Step 3: Top 15 no gráfico de barras**
+- [ ] **Step 3: Commitar apenas se o Desktop tiver reescrito os visual.json**
 
-Selecione `v_bar_dy` → mesmo filtro **N Principais = 15** por `Dividend Yield 12m`. Ordene por `Dividend Yield 12m` decrescente.
-
-- [ ] **Step 4: Conferir renderização e interação**
-
-- A tabela mostra exatamente 15 linhas (Empresa · Setor · DY em %), maior DY no topo.
-- O gráfico mostra as mesmas 15 empresas.
-- Clicar num setor no slicer filtra tabela e gráfico.
-
-- [ ] **Step 5: Salvar e commitar os visual.json finalizados**
+Se salvar no Desktop reescrever os arquivos da página (reformatação/ajuste), commite **somente** os arquivos desta feature:
 
 ```bash
 git add "Panorama Macro BCB.Report/definition/pages/pagina03dividendos"
-git commit -m "feat(report): Top 15 e ordenacao por DY na pagina de dividendos"
+git commit -m "chore(report): ajustes da pagina de dividendos apos verificacao no Desktop"
 ```
 
-Rode `git diff --staged --stat` e confirme que só arquivos desta página/feature entraram.
+Rode `git diff --staged --stat` e confirme que só arquivos desta página entraram — **não** commite alterações de whitespace/`filterConfig` de outras páginas (regressão de round-trip do Desktop, como ocorreu antes).
 
 ---
 
