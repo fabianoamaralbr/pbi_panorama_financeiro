@@ -11,7 +11,7 @@ annotation PBI_ProTooling = ["DevMode"]
 
 annotation PBI_QueryOrder = ["UrlBaseBCB","DataInicial","fnBcbSgs","UrlBaseBrapi","BrapiToken","IbovTickers","UrlBaseYahoo","fnYahooProventos","fnBrapiQuote","d_indicador","f_indicadores","d_calendario","d_empresa","f_proventos","_Medidas"]
 
-annotation __PBI_TimeIntelligenceEnabled = 1
+annotation __PBI_TimeIntelligenceEnabled = 0
 
 ref table d_indicador
 ref table f_indicadores

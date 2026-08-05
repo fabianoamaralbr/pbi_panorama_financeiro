@@ -39,6 +39,9 @@ pbi_panorama_financeiro/
 │       ├── pagina01panorama/         # KPI cards + linhas: Selic, IPCA, Câmbio, PIB
 │       ├── pagina02explorar/         # Exploração livre por indicador (slicer)
 │       └── pagina03dividendos/       # Top 15 DY 12m Ibovespa
+├── contracts/panorama/               # Data contracts (macro + ações)
+├── scripts/dq_check_panorama.py      # Validador DQ (dados ao vivo vs contratos)
+├── outputs/                          # Relatórios DQ, métricas e decisões
 ├── docs/superpowers/
 │   ├── specs/                        # Design docs das features
 │   └── plans/                        # Planos de implementação
@@ -67,16 +70,19 @@ Os dois domínios não têm relacionamento entre si.
 ## Convenções específicas
 
 - **`fnBcbSgs(codigo, dataInicial)`** — fatia séries diárias em janelas de ≤10 anos (limite da API BCB). Séries mensais não têm essa restrição.
-- **`fnBrapiQuote(ticker)`** — uma chamada brapi por ticker para `d_empresa` (preço, P/L, faixas 52s).
-- **`fnYahooProventos(ticker)`** — Yahoo Finance para dividendos/JCP de todo o universo Ibovespa. O brapi free só expõe proventos para 4 tickers sandbox (PETR4, VALE3, MGLU3, ITUB4).
+- **`fnBrapiQuote(ticker)`** — uma chamada brapi por ticker para `d_empresa` (preço, P/L, faixas 52s). O plano **free da brapi não aceita múltiplos tickers por chamada** — batching em lote deixa `d_empresa` vazia; manter 1 requisição/ticker.
+- **`fnYahooProventos(ticker)`** — Yahoo Finance para dividendos/JCP de todo o universo Ibovespa (uma chamada por ticker — Yahoo não aceita lote). O brapi free só expõe proventos para 4 tickers sandbox (PETR4, VALE3, MGLU3, ITUB4).
 - **`IbovTickers`** — lista estática (~85 tickers). Atualizar manualmente a cada rebalanceamento trimestral da B3.
+- **Medidas dedicadas por indicador** (`Selic Meta`, `IPCA 12m`, `Dólar PTAX`, `PIB Mensal`) filtram `d_indicador[codigo]` embutido — os cards/linhas da p1 usam essas medidas, **sem** filtro no visual. Não religar cards a `Valor Atual` sem filtro (soma todos os indicadores).
+- **DQ**: contratos em `contracts/panorama/` + validador `scripts/dq_check_panorama.py` (BCB/Yahoo públicos; brapi via `BRAPI_TOKEN` no ambiente). Medidas da pasta "06. Diagnóstico" sinalizam falha parcial de carga.
 - **DY 12m** = (dividendos + JCP pagos nos últimos 12 meses) ÷ preço atual.
-- Sem identidade de marca corporativa (tema padrão do Power BI).
+- **Auto date/time desligado** (`__PBI_TimeIntelligenceEnabled = 0` em `model.tmdl`) para não inflar o modelo; `d_calendario` é a única tabela de datas. **Marcar `d_calendario` como Tabela de Data no Desktop** (não expresso em TMDL).
+- **Sem identidade de marca neste projeto** (portfólio público, decisão do dono). Usar o **tema padrão do Power BI**; não aplicar paleta, fonte, tema customizado nem logomarca corporativa.
 
 ## Gotchas / cuidados
 
 - **`BrapiToken` — NUNCA commitar com valor real.** O Power BI Desktop reescreve o parâmetro com o valor real ao salvar o arquivo. Zerar para `""` antes de qualquer `git commit` ou `git push`. O repositório deve sempre manter `BrapiToken = ""`.
-- **Desktop reformata arquivos ao salvar** — pode remover `filterConfig` de cards e alterar formatação de vários `.json`/`.tmdl`. Revisar `git diff` antes de commitar para não incluir ruído de reformatação.
+- **Desktop reformata arquivos ao salvar** — pode remover `filterConfig` de cards e alterar formatação de vários `.json`/`.tmdl`. Revisar `git diff` antes de commitar para não incluir ruído de reformatação. **Por isso os cards da p1 usam medidas dedicadas com filtro embutido** (não dependem de `filterConfig` no visual) — foi assim que o bug "todos os cards somando todos os indicadores" foi corrigido.
 - **Privacidade das fontes** — se o Desktop pedir configuração de privacidade, todas devem ser **Público**; caso contrário o Power Query bloqueia as queries de combinação.
 - **Limite da API BCB** — séries diárias: máximo 10 anos por requisição; `fnBcbSgs` gerencia isso automaticamente com janelas.
 - **Composição do Ibovespa** — B3 rebalancea trimestralmente; o parâmetro `IbovTickers` precisa atualização manual.

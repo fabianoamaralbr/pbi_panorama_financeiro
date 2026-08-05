@@ -23,11 +23,11 @@
                       "Entity": "_Medidas"
                     }
                   },
-                  "Property": "Valor Atual"
+                  "Property": "IPCA 12m"
                 }
               },
-              "queryRef": "_Medidas.Valor Atual",
-              "nativeQueryRef": "Valor Atual"
+              "queryRef": "_Medidas.IPCA 12m",
+              "nativeQueryRef": "IPCA 12m"
             }
           ]
         }

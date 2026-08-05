@@ -51,12 +51,16 @@ Ações:   d_empresa   1 ── * f_proventos        (chave: ticker)
 **Ações**
 - `d_empresa` — dimensão por ação (`ticker`, `nome`, `setor`, `preco_atual`, `pl`,
   `min_52s`, `max_52s`), montada pela função M `fnBrapiQuote` (uma chamada brapi por
-  ticker) com o setor vindo de `/api/quote/list`.
+  ticker) com o setor vindo de `/api/quote/list`. *(Obs.: o plano free da brapi não aceita
+  múltiplos tickers por chamada — por isso é uma requisição por ticker.)*
 - `f_proventos` — fato de dividendos/JCP (`ticker`, `data_pagamento`, `valor`, `tipo`),
-  alimentado pela função M `fnYahooProventos` (Yahoo Finance).
+  alimentado pela função M `fnYahooProventos` (Yahoo Finance, uma chamada por ticker —
+  o endpoint do Yahoo não aceita lote).
 
-`_Medidas` reúne as medidas DAX (Valor Atual, Variações, Média, Mín, Máx, Dividend
-Yield 12m, etc.).
+`_Medidas` reúne as medidas DAX, organizadas em pastas: base (`Valor Atual`), variações,
+estatística, dividendos/ação, **indicadores dedicados** (`Selic Meta`, `IPCA 12m`, `Dólar PTAX`, `PIB Mensal` — cada uma com o filtro
+de `codigo` embutido, para não depender de filtro no visual) e **diagnóstico de carga**
+(`Tickers Monitorados`, `Tickers sem Preço`, `Cobertura de Preço %`, `Tickers com Proventos`).
 
 ## Como usar
 
@@ -91,6 +95,25 @@ setor, preço, P/L e faixa de 52 semanas.
   todo o universo vêm do Yahoo. Preço, P/L e setor continuam vindo do brapi.
 - **Composição do Ibovespa:** atualize o parâmetro `IbovTickers` a cada rebalanceamento
   trimestral da B3.
+- **Top 15:** aplique um filtro **Top N (15) por `Dividend Yield 12m`** nos visuais da
+  página (filtro de visual no Desktop). Não use seleção manual de empresas num slicer —
+  ela não acompanha a atualização dos dados.
+
+## Qualidade de dados
+
+Contratos de dados em `contracts/panorama/` (`macro_indicadores.yml`, `acoes_dividendos.yml`)
+definem thresholds de frescor, domínio de valores, cobertura de preço e plausibilidade do
+Dividend Yield (0–30%). O validador `scripts/dq_check_panorama.py` checa os dados ao vivo
+contra esses contratos e grava relatório/métricas em `outputs/`:
+
+```bash
+# BCB e Yahoo são públicos; brapi lê o token do ambiente (nunca hardcoded)
+BRAPI_TOKEN=seu_token python scripts/dq_check_panorama.py
+python scripts/dq_check_panorama.py          # sem token: pula d_empresa (WARN)
+```
+
+Em tempo de relatório, as medidas da pasta **Diagnóstico** sinalizam falhas parciais de
+carga (ex.: `Cobertura de Preço %` abaixo de 100% indica tickers sem retorno da brapi).
 
 ---
 

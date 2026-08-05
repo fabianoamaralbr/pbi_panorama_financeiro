@@ -23,11 +23,11 @@
                       "Entity": "_Medidas"
                     }
                   },
-                  "Property": "Valor Atual"
+                  "Property": "Dólar PTAX"
                 }
               },
-              "queryRef": "_Medidas.Valor Atual",
-              "nativeQueryRef": "Valor Atual"
+              "queryRef": "_Medidas.Dólar PTAX",
+              "nativeQueryRef": "Dólar PTAX"
             }
           ]
         }

@@ -81,18 +81,71 @@ table _Medidas
 		displayFolder: 05. Ação
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000013
 
+	/// Posição do preço atual dentro da faixa de 52 semanas (0% = mínima, 100% = máxima).
+	/// Clamp em [0, 1] para evitar valores fora da faixa por defasagem entre fontes (brapi vs Yahoo).
 	measure 'Posição 52 Semanas' =
 			VAR _preco = [Preço Atual Ação]
 			VAR _min = SELECTEDVALUE(d_empresa[min_52s])
 			VAR _max = SELECTEDVALUE(d_empresa[max_52s])
+			VAR _pos = DIVIDE(_preco - _min, _max - _min)
 			RETURN
-			    DIVIDE(_preco - _min, _max - _min)
+			    IF(NOT ISBLANK(_pos), MIN(MAX(_pos, 0), 1))
 		formatString: 0.0%
 		displayFolder: 05. Ação
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000014
 
+	/// Selic Meta (código BCB 432). Medida dedicada com filtro embutido em d_indicador —
+	/// dispensa filtro no visual (robusto ao Desktop remover filterConfig dos cards).
+	measure 'Selic Meta' = CALCULATE([Valor Atual], REMOVEFILTERS(d_indicador), d_indicador[codigo] = "432")
+		formatString: #,0.00
+		displayFolder: 07. Indicadores
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000015
+
+	/// IPCA acumulado 12 meses (código BCB 13522).
+	measure 'IPCA 12m' = CALCULATE([Valor Atual], REMOVEFILTERS(d_indicador), d_indicador[codigo] = "13522")
+		formatString: #,0.00
+		displayFolder: 07. Indicadores
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000016
+
+	/// Dólar PTAX venda (código BCB 1).
+	measure 'Dólar PTAX' = CALCULATE([Valor Atual], REMOVEFILTERS(d_indicador), d_indicador[codigo] = "1")
+		formatString: #,0.0000
+		displayFolder: 07. Indicadores
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000017
+
+	/// PIB mensal em R$ milhões (código BCB 4380).
+	measure 'PIB Mensal' = CALCULATE([Valor Atual], REMOVEFILTERS(d_indicador), d_indicador[codigo] = "4380")
+		formatString: #,0
+		displayFolder: 07. Indicadores
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000018
+
+	/// Diagnóstico de carga: total de tickers carregados em d_empresa.
+	measure 'Tickers Monitorados' = COUNTROWS(d_empresa)
+		formatString: 0
+		displayFolder: 06. Diagnóstico
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000019
+
+	/// Diagnóstico de carga: tickers sem preço (falha na brapi ou ticker deslistado).
+	measure 'Tickers sem Preço' = COUNTROWS(FILTER(ALL(d_empresa), ISBLANK(d_empresa[preco_atual])))
+		formatString: 0
+		displayFolder: 06. Diagnóstico
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000020
+
+	/// Diagnóstico de carga: % de tickers com preço válido. Abaixo de 100% indica falha parcial na fonte.
+	measure 'Cobertura de Preço %' = DIVIDE([Tickers Monitorados] - [Tickers sem Preço], [Tickers Monitorados])
+		formatString: 0.0%
+		displayFolder: 06. Diagnóstico
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000021
+
+	/// Diagnóstico de carga: quantos tickers têm proventos no período (cobertura Yahoo).
+	measure 'Tickers com Proventos' = CALCULATE(DISTINCTCOUNT(f_proventos[ticker]))
+		formatString: 0
+		displayFolder: 06. Diagnóstico
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000022
+
 	column 'Coluna 1'
 		dataType: string
+		isHidden
 		lineageTag: a04a5884-0ea5-4950-8c47-3befafd11097
 		summarizeBy: none
 		sourceColumn: Coluna 1

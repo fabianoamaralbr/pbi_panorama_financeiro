@@ -3,6 +3,8 @@ expression UrlBaseBCB = "https://api.bcb.gov.br" meta [IsParameterQuery=true, Ty
 
 	annotation PBI_ResultType = Text
 
+	annotation PBI_NavigationStepName = Navegação
+
 expression DataInicial = "2015-01-01" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: b1a7e0c2-2001-4aaa-8bbb-000000000002
 

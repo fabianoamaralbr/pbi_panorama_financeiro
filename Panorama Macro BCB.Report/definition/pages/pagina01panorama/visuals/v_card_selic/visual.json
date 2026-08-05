@@ -23,11 +23,11 @@
                       "Entity": "_Medidas"
                     }
                   },
-                  "Property": "Valor Atual"
+                  "Property": "Selic Meta"
                 }
               },
-              "queryRef": "_Medidas.Valor Atual",
-              "nativeQueryRef": "Valor Atual"
+              "queryRef": "_Medidas.Selic Meta",
+              "nativeQueryRef": "Selic Meta"
             }
           ]
         }

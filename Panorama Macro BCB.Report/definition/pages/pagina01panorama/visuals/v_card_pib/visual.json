@@ -23,11 +23,11 @@
                       "Entity": "_Medidas"
                     }
                   },
-                  "Property": "Valor Atual"
+                  "Property": "PIB Mensal"
                 }
               },
-              "queryRef": "_Medidas.Valor Atual",
-              "nativeQueryRef": "Valor Atual"
+              "queryRef": "_Medidas.PIB Mensal",
+              "nativeQueryRef": "PIB Mensal"
             }
           ]
         }
