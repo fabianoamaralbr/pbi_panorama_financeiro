@@ -84,6 +84,31 @@ de `codigo` embutido, para não depender de filtro no visual) e **diagnóstico d
 > ao salvar; zere para `""` antes de qualquer commit/push. O repositório mantém
 > `BrapiToken = ""`.
 
+### Como obter o token da brapi
+
+O domínio de **ações** depende de um token da [brapi.dev](https://brapi.dev). Ele é
+**gratuito** e obrigatório para o projeto puxar preço, P/L e setor das ações. Para gerar:
+
+1. Crie uma conta gratuita em [brapi.dev](https://brapi.dev).
+2. Acesse o painel (dashboard) da sua conta e **gere um token**.
+3. Cole o valor no parâmetro `BrapiToken` do Power BI Desktop e clique em **Atualizar**.
+
+**O que o token dá acesso** — endpoints `/api/quote/{ticker}` e `/api/quote/list`, que
+alimentam a dimensão `d_empresa`:
+
+| Dado | Campo da API brapi |
+|---|---|
+| Preço atual da ação | `regularMarketPrice` |
+| Índice P/L (preço/lucro) | `priceEarnings` |
+| Mínimo de 52 semanas | `fiftyTwoWeekLow` |
+| Máximo de 52 semanas | `fiftyTwoWeekHigh` |
+| Nome da empresa | `longName` / `shortName` |
+| Setor | via `/api/quote/list` |
+
+> **O que NÃO precisa do token:** as séries macro (BCB) e os dividendos/JCP (Yahoo Finance)
+> são públicos e funcionam sem token. **Sem o token**, a dimensão `d_empresa` fica vazia e a
+> página de dividendos perde preço, P/L e setor (o Dividend Yield não é calculado).
+
 ## Página "Dividendos (Ibovespa)"
 
 Lista as 15 ações do Ibovespa com maior **Dividend Yield dos últimos 12 meses**, com
