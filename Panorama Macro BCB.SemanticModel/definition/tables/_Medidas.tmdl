@@ -274,6 +274,22 @@ table _Medidas
 		displayFolder: 08. Barsi
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000112
 
+	/// Score 0–100. Pesos: DY Médio 5a 30 · Anos Consecutivos 25 · BESST 15 · Margem vs Teto 20 · P/L 10.
+	measure 'Score Barsi' =
+			VAR _dy = MIN(DIVIDE([DY Médio 5a], 0.12), 1) * 30
+			VAR _consec = MIN(DIVIDE([Anos Consecutivos], 10), 1) * 25
+			VAR _sigla = SELECTEDVALUE(d_empresa[besst])
+			VAR _besst = IF(_sigla <> "—" && NOT ISBLANK(_sigla), 15, 0)
+			VAR _m = [Margem vs Teto %]
+			VAR _margem = IF(_m > 0, MIN(DIVIDE(_m, 0.30), 1) * 20, 0)
+			VAR _p = [P/L]
+			VAR _pl = IF(_p > 0 && _p <= 20, MIN(DIVIDE(20 - _p, 15), 1) * 10, 0)
+			RETURN
+			    MIN(MAX(_dy + _consec + _besst + _margem + _pl, 0), 100)
+		formatString: #,0.0
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000113
+
 	column 'Coluna 1'
 		dataType: string
 		isHidden
