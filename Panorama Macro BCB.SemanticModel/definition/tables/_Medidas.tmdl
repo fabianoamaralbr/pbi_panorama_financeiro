@@ -214,6 +214,66 @@ table _Medidas
 		displayFolder: 08. Barsi
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000108
 
+	measure 'Anos Pagando 10a' =
+			VAR _anoRef = YEAR(TODAY())
+			RETURN
+			    CALCULATE(
+			        DISTINCTCOUNT(f_proventos_anual[ano]),
+			        f_proventos_anual[ano] >= _anoRef - 10,
+			        f_proventos_anual[ano] <= _anoRef - 1,
+			        f_proventos_anual[total_proventos] > 0
+			    )
+		formatString: 0
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000109
+
+	/// Maior sequência de anos pagando terminando no último ano completo (janela 10a).
+	measure 'Anos Consecutivos' =
+			VAR _anoUltimo = YEAR(TODAY()) - 1
+			VAR _janela = 10
+			VAR _tab =
+			    ADDCOLUMNS(
+			        GENERATESERIES(_anoUltimo - _janela + 1, _anoUltimo, 1),
+			        "@ano", [Value],
+			        "@pago",
+			            VAR _a = [Value]
+			            RETURN CALCULATE(SUM(f_proventos_anual[total_proventos]), f_proventos_anual[ano] = _a)
+			    )
+			VAR _ultimoNaoPago = MAXX(FILTER(_tab, [@pago] = 0 || ISBLANK([@pago])), [@ano])
+			RETURN
+			    IF(ISBLANK(_ultimoNaoPago), _janela, _anoUltimo - _ultimoNaoPago)
+		formatString: 0
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000110
+
+	measure 'Cortes de Dividendo 10a' =
+			VAR _anoUltimo = YEAR(TODAY()) - 1
+			VAR _janela = 10
+			VAR _tab =
+			    ADDCOLUMNS(
+			        GENERATESERIES(_anoUltimo - _janela + 1, _anoUltimo, 1),
+			        "@ano", [Value],
+			        "@val", VAR _a = [Value] RETURN CALCULATE(SUM(f_proventos_anual[total_proventos]), f_proventos_anual[ano] = _a)
+			    )
+			VAR _comAnt =
+			    ADDCOLUMNS(_tab, "@ant", VAR _a = [@ano] RETURN MAXX(FILTER(_tab, [@ano] = _a - 1), [@val]))
+			RETURN
+			    COUNTROWS(FILTER(_comAnt, NOT ISBLANK([@ant]) && [@ant] > 0 && [@val] < [@ant]))
+		formatString: 0
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000111
+
+	measure 'Crescimento Dividendo CAGR 5a' =
+			VAR _fim = YEAR(TODAY()) - 1
+			VAR _ini = _fim - 5
+			VAR _vFim = CALCULATE(SUM(f_proventos_anual[total_proventos]), f_proventos_anual[ano] = _fim)
+			VAR _vIni = CALCULATE(SUM(f_proventos_anual[total_proventos]), f_proventos_anual[ano] = _ini)
+			RETURN
+			    IF(_vIni > 0 && _vFim > 0, (_vFim / _vIni) ^ (1 / 5) - 1)
+		formatString: 0.0%
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000112
+
 	column 'Coluna 1'
 		dataType: string
 		isHidden
