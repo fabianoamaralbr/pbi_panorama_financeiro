@@ -1,0 +1,77 @@
+table d_besst
+	lineageTag: b1a7e0c2-a001-4aaa-8bbb-000000000001
+
+	column ticker
+		dataType: string
+		lineageTag: b1a7e0c2-a001-4aaa-8bbb-000000000002
+		summarizeBy: none
+		sourceColumn: ticker
+
+		annotation SummarizationSetBy = Automatic
+
+	column besst_sigla
+		dataType: string
+		lineageTag: b1a7e0c2-a001-4aaa-8bbb-000000000003
+		summarizeBy: none
+		sourceColumn: besst_sigla
+
+		annotation SummarizationSetBy = Automatic
+
+	column besst_nome
+		dataType: string
+		lineageTag: b1a7e0c2-a001-4aaa-8bbb-000000000004
+		summarizeBy: none
+		sourceColumn: besst_nome
+
+		annotation SummarizationSetBy = Automatic
+
+	partition d_besst = m
+		mode: import
+		source =
+				let
+				    linhas = {
+				        [ticker="BBAS3", besst_sigla="B", besst_nome="Bancos"],
+				        [ticker="BBDC3", besst_sigla="B", besst_nome="Bancos"],
+				        [ticker="BBDC4", besst_sigla="B", besst_nome="Bancos"],
+				        [ticker="ITUB4", besst_sigla="B", besst_nome="Bancos"],
+				        [ticker="SANB11", besst_sigla="B", besst_nome="Bancos"],
+				        [ticker="BPAC11", besst_sigla="B", besst_nome="Bancos"],
+				        [ticker="ABCB4", besst_sigla="B", besst_nome="Bancos"],
+				        [ticker="BMGB4", besst_sigla="B", besst_nome="Bancos"],
+				        [ticker="ITSA4", besst_sigla="B", besst_nome="Bancos"],
+				        [ticker="CMIG4", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="CPFE3", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="CPLE6", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="EGIE3", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="ELET3", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="ELET6", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="ENGI11", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="ENEV3", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="EQTL3", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="TAEE11", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="ISAE4", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="AURE3", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="NEOE3", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="AESB3", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="ALUP11", besst_sigla="E", besst_nome="Energia"],
+				        [ticker="SBSP3", besst_sigla="SA", besst_nome="Saneamento"],
+				        [ticker="SAPR4", besst_sigla="SA", besst_nome="Saneamento"],
+				        [ticker="SAPR11", besst_sigla="SA", besst_nome="Saneamento"],
+				        [ticker="CSMG3", besst_sigla="SA", besst_nome="Saneamento"],
+				        [ticker="ORVR3", besst_sigla="SA", besst_nome="Saneamento"],
+				        [ticker="BBSE3", besst_sigla="SE", besst_nome="Seguros"],
+				        [ticker="PSSA3", besst_sigla="SE", besst_nome="Seguros"],
+				        [ticker="CXSE3", besst_sigla="SE", besst_nome="Seguros"],
+				        [ticker="WIZC3", besst_sigla="SE", besst_nome="Seguros"],
+				        [ticker="IRBR3", besst_sigla="SE", besst_nome="Seguros"],
+				        [ticker="VIVT3", besst_sigla="T", besst_nome="Telecom"],
+				        [ticker="TIMS3", besst_sigla="T", besst_nome="Telecom"],
+				        [ticker="DESK3", besst_sigla="T", besst_nome="Telecom"],
+				        [ticker="FIQE3", besst_sigla="T", besst_nome="Telecom"]
+				    },
+				    t = Table.FromRecords(linhas),
+				    tipos = Table.TransformColumnTypes(t, {{"ticker", type text}, {"besst_sigla", type text}, {"besst_nome", type text}})
+				in
+				    tipos
+
+	annotation PBI_ResultType = Table
