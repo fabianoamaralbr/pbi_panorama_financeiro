@@ -290,6 +290,86 @@ table _Medidas
 		displayFolder: 08. Barsi
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000113
 
+	measure 'Sim Aporte Mensal' = SELECTEDVALUE(p_Sim_AporteMensal[Valor], 1000)
+		formatString: #,0
+		displayFolder: 09. Simulador
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000114
+
+	measure 'Sim DY Esperado' = SELECTEDVALUE(p_Sim_DYEsperado[Valor], 0.06)
+		formatString: 0.0%
+		displayFolder: 09. Simulador
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000115
+
+	measure 'Sim Crescimento Aporte' = SELECTEDVALUE(p_Sim_CrescAporte[Valor], 0.05)
+		formatString: 0.0%
+		displayFolder: 09. Simulador
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000116
+
+	measure 'Sim Anos' = SELECTEDVALUE(p_Sim_Anos[Valor], 20)
+		formatString: 0
+		displayFolder: 09. Simulador
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000117
+
+	/// FV de aportes anuais crescentes (g) reinvestidos ao yield (d), sem ganho de capital.
+	measure 'Patrimônio Projetado' =
+			VAR _A = [Sim Aporte Mensal] * 12
+			VAR _d = [Sim DY Esperado]
+			VAR _g = [Sim Crescimento Aporte]
+			VAR _N = [Sim Anos]
+			RETURN
+			    SUMX(
+			        GENERATESERIES(1, _N, 1),
+			        VAR _t = [Value]
+			        RETURN _A * (1 + _g) ^ (_t - 1) * (1 + _d) ^ (_N - _t)
+			    )
+		formatString: "R$ "#,0
+		displayFolder: 09. Simulador
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000118
+
+	measure 'Renda Passiva Mensal Projetada' = DIVIDE([Patrimônio Projetado] * [Sim DY Esperado], 12)
+		formatString: "R$ "#,0
+		displayFolder: 09. Simulador
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000119
+
+	measure 'Total Aportado' =
+			VAR _A = [Sim Aporte Mensal] * 12
+			VAR _g = [Sim Crescimento Aporte]
+			VAR _N = [Sim Anos]
+			RETURN
+			    SUMX(GENERATESERIES(1, _N, 1), _A * (1 + _g) ^ ([Value] - 1))
+		formatString: "R$ "#,0
+		displayFolder: 09. Simulador
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000120
+
+	measure 'Dividendos Reinvestidos' = [Patrimônio Projetado] - [Total Aportado]
+		formatString: "R$ "#,0
+		displayFolder: 09. Simulador
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000121
+
+	/// Patrimônio acumulado até o ano do eixo (d_horizonte[ano]); em branco além do horizonte selecionado.
+	measure 'Patrimônio até o Ano' =
+			VAR _A = [Sim Aporte Mensal] * 12
+			VAR _d = [Sim DY Esperado]
+			VAR _g = [Sim Crescimento Aporte]
+			VAR _k = SELECTEDVALUE(d_horizonte[ano])
+			RETURN
+			    IF(
+			        _k <= [Sim Anos],
+			        SUMX(
+			            GENERATESERIES(1, _k, 1),
+			            VAR _t = [Value]
+			            RETURN _A * (1 + _g) ^ (_t - 1) * (1 + _d) ^ (_k - _t)
+			        )
+			    )
+		formatString: "R$ "#,0
+		displayFolder: 09. Simulador
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000122
+
+	measure 'Renda Mensal até o Ano' = DIVIDE([Patrimônio até o Ano] * [Sim DY Esperado], 12)
+		formatString: "R$ "#,0
+		displayFolder: 09. Simulador
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000123
+
 	column 'Coluna 1'
 		dataType: string
 		isHidden
