@@ -133,6 +133,56 @@ setor, preço, P/L e faixa de 52 semanas.
   página (filtro de visual no Desktop). Não use seleção manual de empresas num slicer —
   ela não acompanha a atualização dos dados.
 
+## Método Barsi
+
+A partir da **versão 2.0**, o projeto incorpora uma camada de análise pelo método Barsi —
+uma abordagem de seleção de ações pagadoras de dividendos baseada em preço-teto (Bazin),
+consistência histórica e score composto.
+
+### Universo monitorado (BESST ampliado)
+
+O parâmetro `IbovTickers` foi ampliado para incluir ~95 tickers: além do Ibovespa, cobre
+os cinco setores do acrônimo **BESST** (Bancos, Energia elétrica, Saneamento, Seguros e
+Telecom), adicionando pagadoras consistentes fora do índice como ABCB4, SAPR11, WIZC3, ALUP11
+e outras. O mapeamento ticker → sigla BESST é curado manualmente em `d_besst` para contornar
+a ambiguidade dos setores retornados pela brapi.
+
+### Páginas
+
+| Página | Descrição |
+|---|---|
+| **Seleção Barsi (Screener)** | Tabela comparativa: Preço, Preço-Teto, Margem vs Teto, Sinal (Comprar/Aguardar), DY 12m, DY Médio 5a, Anos Consecutivos, P/L e Score Barsi. Slicer de Yield Desejado (what-if) e card com contagem de ações abaixo do teto. |
+| **Detalhe da Ação** | Histórico de proventos por ano (gráfico de barras), cards de preço atual, preço-teto, margem de segurança, posição na faixa de 52 semanas, anos consecutivos, CAGR de dividendos e P/L. Slicer de ação (seleção única). |
+| **Ranking Barsi** | Barras horizontais com as ações rankeadas por Score Barsi. Filtros por sigla BESST e Yield Desejado. |
+| **Simulador de Renda Passiva** | Projeção de patrimônio e renda mensal via bola de neve (aportes crescentes + reinvestimento de dividendos). Sliders: aporte mensal, DY esperado, crescimento anual do aporte e horizonte de investimento. Curva de evolução ano a ano. |
+
+### Medidas principais
+
+| Medida | Descrição |
+|---|---|
+| `Dividendo Médio Anual 5a` | Soma dos proventos dos últimos 5 anos completos ÷ 5 (denominador fixo). |
+| `Preço-Teto` | Dividendo Médio Anual 5a ÷ Yield Desejado (Bazin). |
+| `Margem vs Teto %` | (Preço-Teto − Preço Atual) ÷ Preço Atual. Positivo = abaixo do teto. |
+| `Sinal Barsi` | "Comprar" quando Preço ≤ Preço-Teto; "Aguardar" quando acima; "Sem histórico" quando teto = 0. |
+| `Anos Consecutivos` | Maior sequência de anos com pagamento terminando no último ano completo (janela 10a). |
+| `Score Barsi` | 0–100 pts. Pesos: DY Médio 30 · Anos Consecutivos 25 · BESST 15 · Margem 20 · P/L 10. |
+| `Patrimônio Projetado` | FV de aportes anuais crescentes reinvestidos ao DY esperado (sem ganho de capital). |
+| `Renda Passiva Mensal Projetada` | Patrimônio Projetado × DY Esperado ÷ 12. |
+
+### Verificação (oráculo Python)
+
+As fórmulas são implementadas primeiro em Python puro (`scripts/barsi_calc.py`) e testadas
+com pytest (`tests/test_barsi_calc.py`). As medidas DAX espelham essas fórmulas. Para
+checar um cenário do simulador diretamente:
+
+```bash
+python -c "
+from scripts.barsi_calc import patrimonio_projetado, renda_passiva_mensal
+fv = patrimonio_projetado(aporte_mensal=1000, dy=0.06, cresc_aporte=0.05, anos=20)
+print(f'Patrimônio: R$ {fv:,.0f}  |  Renda mensal: R$ {renda_passiva_mensal(fv, 0.06):,.0f}')
+"
+```
+
 ## Qualidade de dados
 
 Contratos de dados em `contracts/panorama/` (`macro_indicadores.yml`, `acoes_dividendos.yml`)
