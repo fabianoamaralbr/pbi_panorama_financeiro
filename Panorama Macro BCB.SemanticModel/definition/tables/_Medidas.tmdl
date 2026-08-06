@@ -143,6 +143,77 @@ table _Medidas
 		displayFolder: 06. Diagnóstico
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000022
 
+	measure 'Yield Desejado' = SELECTEDVALUE(p_YieldDesejado[Valor], 0.06)
+		formatString: 0.0%
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000101
+
+	/// Soma dos proventos dos últimos 5 anos completos ÷ 5 (denominador fixo penaliza anos sem pagamento).
+	measure 'Dividendo Médio Anual 5a' =
+			VAR _anoRef = YEAR(TODAY())
+			VAR _soma =
+			    CALCULATE(
+			        SUM(f_proventos_anual[total_proventos]),
+			        f_proventos_anual[ano] >= _anoRef - 5,
+			        f_proventos_anual[ano] <= _anoRef - 1
+			    )
+			RETURN
+			    DIVIDE(_soma, 5)
+		formatString: #,0.00
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000102
+
+	measure 'Preço-Teto' = DIVIDE([Dividendo Médio Anual 5a], [Yield Desejado])
+		formatString: #,0.00
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000103
+
+	/// Positivo = preço atual abaixo do teto (margem de segurança para comprar).
+	measure 'Margem vs Teto %' = DIVIDE([Preço-Teto] - [Preço Atual Ação], [Preço Atual Ação])
+		formatString: 0.0%
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000104
+
+	measure 'DY Médio 5a' = DIVIDE([Dividendo Médio Anual 5a], [Preço Atual Ação])
+		formatString: 0.00%
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000105
+
+	measure 'Sinal Barsi' =
+			VAR _preco = [Preço Atual Ação]
+			VAR _teto = [Preço-Teto]
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        _teto = 0 || ISBLANK(_teto), "Sem histórico",
+			        _preco <= _teto, "Comprar",
+			        "Aguardar"
+			    )
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000106
+
+	/// 1 = comprar (preço ≤ teto). Para formatação condicional.
+	measure 'Sinal Barsi (cor)' =
+			VAR _preco = [Preço Atual Ação]
+			VAR _teto = [Preço-Teto]
+			RETURN
+			    IF(_teto > 0 && _preco <= _teto, 1, 0)
+		formatString: 0
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000107
+
+	/// Nº de ações do universo filtrado com preço ≤ teto.
+	measure 'Ações Abaixo do Teto' =
+			COUNTROWS(
+			    FILTER(
+			        VALUES(d_empresa[ticker]),
+			        [Preço Atual Ação] <= [Preço-Teto] && [Preço-Teto] > 0
+			    )
+			)
+		formatString: 0
+		displayFolder: 08. Barsi
+		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000108
+
 	column 'Coluna 1'
 		dataType: string
 		isHidden
