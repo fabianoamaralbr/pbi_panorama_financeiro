@@ -260,13 +260,15 @@ def cagr_dividendo(por_ano: dict[int, float], ano_ref: int, janela: int = 5) -> 
 # --- Score -----------------------------------------------------------------
 def score_barsi(dy_medio: float, anos_consec: int, is_besst: bool,
                 margem: float, pl: float) -> float:
-    """0–100. Pesos: DY 30, consecutivos 25, BESST 15, margem 20, P/L 10."""
+    """0–100. Pesos: DY 30, consecutivos 25, BESST 15, margem 20, P/L 10.
+    P/L componente: satura em 10 pts para P/L ≤ 5 (bem barato) e cai a 0 em P/L = 20."""
     s_dy = min(dy_medio / 0.12, 1.0) * 30
     s_consec = min(anos_consec / 10, 1.0) * 25
     s_besst = 15.0 if is_besst else 0.0
     s_margem = min(margem / 0.30, 1.0) * 20 if margem > 0 else 0.0
-    s_pl = (20 - pl) / 20 * 10 if 0 < pl <= 20 else 0.0
-    return round(s_dy + s_consec + s_besst + s_margem + s_pl, 2)
+    s_pl = max(0.0, min((20 - pl) / 15, 1.0)) * 10 if 0 < pl <= 20 else 0.0
+    total = s_dy + s_consec + s_besst + s_margem + s_pl
+    return round(max(0.0, min(total, 100.0)), 2)
 
 
 # --- Bola de neve ----------------------------------------------------------
@@ -976,9 +978,9 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 			VAR _m = [Margem vs Teto %]
 			VAR _margem = IF(_m > 0, MIN(DIVIDE(_m, 0.30), 1) * 20, 0)
 			VAR _p = [P/L]
-			VAR _pl = IF(_p > 0 && _p <= 20, DIVIDE(20 - _p, 20) * 10, 0)
+			VAR _pl = IF(_p > 0 && _p <= 20, MIN(DIVIDE(20 - _p, 15), 1) * 10, 0)
 			RETURN
-			    _dy + _consec + _besst + _margem + _pl
+			    MIN(MAX(_dy + _consec + _besst + _margem + _pl, 0), 100)
 		formatString: #,0.0
 		displayFolder: 08. Barsi
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000113
