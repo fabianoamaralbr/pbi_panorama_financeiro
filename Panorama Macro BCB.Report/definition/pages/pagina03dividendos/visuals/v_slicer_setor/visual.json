@@ -23,11 +23,11 @@
                       "Entity": "d_empresa"
                     }
                   },
-                  "Property": "setor"
+                  "Property": "besst"
                 }
               },
-              "queryRef": "d_empresa.setor",
-              "nativeQueryRef": "setor",
+              "queryRef": "d_empresa.besst",
+              "nativeQueryRef": "besst",
               "active": true
             }
           ]
@@ -54,7 +54,7 @@
                 "Entity": "d_empresa"
               }
             },
-            "Property": "setor"
+            "Property": "besst"
           }
         },
         "type": "Categorical"
