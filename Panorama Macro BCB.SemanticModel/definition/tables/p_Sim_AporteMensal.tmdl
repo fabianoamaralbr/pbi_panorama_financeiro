@@ -1,0 +1,17 @@
+table p_Sim_AporteMensal
+	lineageTag: b1a7e0c2-c002-4aaa-8bbb-000000000001
+
+	column Valor
+		dataType: int64
+		formatString: #,0
+		lineageTag: b1a7e0c2-c002-4aaa-8bbb-000000000002
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition p_Sim_AporteMensal = calculated
+		mode: import
+		source = GENERATESERIES(100, 20000, 100)
+
+	annotation PBI_ResultType = Table
