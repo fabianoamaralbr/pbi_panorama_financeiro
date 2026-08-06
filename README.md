@@ -81,8 +81,17 @@ de `codigo` embutido, para não depender de filtro no visual) e **diagnóstico d
 | `IbovTickers` | carteira do índice | Lista de tickers (Ibovespa + adicionais monitorados). |
 
 > **Nunca comite o token.** O Power BI Desktop reescreve `BrapiToken` com o valor real
-> ao salvar; zere para `""` antes de qualquer commit/push. O repositório mantém
-> `BrapiToken = ""`.
+> ao salvar. O arquivo `Panorama Macro BCB.SemanticModel/definition/expressions.tmdl`
+> está protegido por **`git skip-worktree`**: o git ignora as reescritas locais do token,
+> então o valor real vive apenas no working-tree local e o commit mantém `BrapiToken = ""`.
+> Não é mais necessário zerar manualmente antes de cada commit.
+>
+> - **Config local (não versionada):** em um clone novo/outra máquina, reaplique com
+>   `git update-index --skip-worktree "Panorama Macro BCB.SemanticModel/definition/expressions.tmdl"`.
+> - **Para commitar mudança legítima nesse arquivo** (funções M, `IbovTickers`):
+>   `git update-index --no-skip-worktree <arquivo>` → zere o token para `""` → commite →
+>   reative com `git update-index --skip-worktree <arquivo>`.
+> - Um `git pull` que altere esse arquivo pode conflitar — desmarque o skip-worktree antes.
 
 ### Como obter o token da brapi
 
