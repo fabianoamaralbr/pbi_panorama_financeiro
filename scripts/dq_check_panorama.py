@@ -27,6 +27,8 @@ from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+from scripts.barsi_calc import besst_de_ticker, dividendo_medio_anual, preco_teto
+
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -172,6 +174,65 @@ def check_acoes(res: Result, tickers: list[str]) -> None:
             res.add(f"proventos.{ticker}.dy", status, f"DY 12m = {dy:.2%}")
 
 
+def check_barsi_besst(res: Result, tickers: list[str]) -> None:
+    """Validate that every ticker in the universe resolves to a BESST sigla via the oracle.
+
+    Tickers that resolve to '—' are expected (non-BESST) and not errors; the check simply
+    confirms the oracle returns a non-empty, valid value for all tickers so the mapping
+    table is consistent with the loaded universe.
+    """
+    valid_siglae = {"B", "E", "SA", "SE", "T", "—"}
+    unresolvable: list[str] = []
+    for ticker in tickers:
+        sigla = besst_de_ticker(ticker, None)  # setor not available here — override dict covers known ones
+        if sigla not in valid_siglae:
+            unresolvable.append(ticker)
+    if unresolvable:
+        res.add(
+            "barsi.besst_resolution",
+            "error",
+            f"{len(unresolvable)} tickers retornam sigla inválida: {unresolvable[:10]}",
+        )
+    else:
+        res.add(
+            "barsi.besst_resolution",
+            "ok",
+            f"todos os {len(tickers)} tickers resolvem para sigla BESST válida",
+        )
+
+
+def check_barsi_teto(res: Result) -> None:
+    """Validate oracle invariant: preco_teto > 0 when dividendo_medio_anual > 0.
+
+    Uses synthetic data so no live API is required — pure formula consistency check.
+    """
+    ano_ref = date.today().year
+    casos_falhos: list[str] = []
+    # Representative test cases: at least one year with dividends, yield_desejado = 0.06
+    test_cases = [
+        ("BBAS3", {ano_ref - 1: 2.50, ano_ref - 2: 2.00}),
+        ("EGIE3", {ano_ref - 1: 3.10}),
+        ("SBSP3", {ano_ref - 1: 1.20, ano_ref - 3: 0.80}),
+    ]
+    for ticker, por_ano in test_cases:
+        div_medio = dividendo_medio_anual(por_ano, ano_ref=ano_ref)
+        teto = preco_teto(div_medio=div_medio, yield_desejado=0.06)
+        if div_medio > 0 and teto <= 0:
+            casos_falhos.append(ticker)
+    if casos_falhos:
+        res.add(
+            "barsi.teto_positivo",
+            "error",
+            f"preco_teto <= 0 apesar de div_medio > 0 para: {casos_falhos}",
+        )
+    else:
+        res.add(
+            "barsi.teto_positivo",
+            "ok",
+            "preco_teto > 0 sempre que dividendo_medio_anual > 0 (invariante verificado)",
+        )
+
+
 def main() -> int:
     t0 = time.perf_counter()
     res = Result()
@@ -180,6 +241,8 @@ def main() -> int:
 
     check_macro(res)
     check_acoes(res, tickers)
+    check_barsi_besst(res, tickers)
+    check_barsi_teto(res)
 
     status = "error" if res.failed else ("warn" if res.warned else "success")
     elapsed = round(time.perf_counter() - t0, 2)
