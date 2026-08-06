@@ -9,7 +9,7 @@ model Model
 
 annotation PBI_ProTooling = ["DevMode"]
 
-annotation PBI_QueryOrder = ["UrlBaseBCB","DataInicial","fnBcbSgs","UrlBaseBrapi","BrapiToken","IbovTickers","UrlBaseYahoo","fnYahooProventos","fnBrapiQuote","d_indicador","f_indicadores","d_calendario","d_empresa","f_proventos","_Medidas"]
+annotation PBI_QueryOrder = ["UrlBaseBCB","DataInicial","fnBcbSgs","UrlBaseBrapi","BrapiToken","IbovTickers","UrlBaseYahoo","fnYahooProventos","fnBrapiQuote","d_indicador","f_indicadores","d_calendario","d_empresa","d_besst","f_proventos","f_proventos_anual","_Medidas"]
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
@@ -19,4 +19,12 @@ ref table d_calendario
 ref table _Medidas
 ref table d_empresa
 ref table f_proventos
+ref table d_besst
+ref table f_proventos_anual
+ref table p_YieldDesejado
+ref table p_Sim_AporteMensal
+ref table p_Sim_DYEsperado
+ref table p_Sim_CrescAporte
+ref table p_Sim_Anos
+ref table d_horizonte
 
