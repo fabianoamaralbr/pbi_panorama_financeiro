@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "v_card_pos52",
+  "position": { "x": 40, "y": 380, "z": 600, "height": 110, "width": 220, "tabOrder": 600 },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Posição 52 Semanas" } }, "queryRef": "_Medidas.Posição 52 Semanas", "nativeQueryRef": "Posição 52 Semanas" }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

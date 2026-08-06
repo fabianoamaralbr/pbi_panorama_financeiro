@@ -1,0 +1,24 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "v_area_evolucao",
+  "position": { "x": 340, "y": 200, "z": 800, "height": 460, "width": 900, "tabOrder": 800 },
+  "visual": {
+    "visualType": "areaChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "d_horizonte" } }, "Property": "ano" } }, "queryRef": "d_horizonte.ano", "nativeQueryRef": "ano" }
+          ]
+        },
+        "Values": {
+          "projections": [
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Patrimônio até o Ano" } }, "queryRef": "_Medidas.Patrimônio até o Ano", "nativeQueryRef": "Patrimônio até o Ano" },
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Renda Mensal até o Ano" } }, "queryRef": "_Medidas.Renda Mensal até o Ano", "nativeQueryRef": "Renda Mensal até o Ano" }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "v_card_teto",
+  "position": { "x": 940, "y": 160, "z": 400, "height": 90, "width": 300, "tabOrder": 400 },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Preço-Teto" } }, "queryRef": "_Medidas.Preço-Teto", "nativeQueryRef": "Preço-Teto" }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
