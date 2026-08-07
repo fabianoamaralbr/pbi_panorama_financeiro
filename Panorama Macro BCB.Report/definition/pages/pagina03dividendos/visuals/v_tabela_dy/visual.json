@@ -15,17 +15,160 @@
       "queryState": {
         "Values": {
           "projections": [
-            {"field": {"Column": {"Expression": {"SourceRef": {"Entity": "d_empresa"}}, "Property": "nome"}}, "queryRef": "d_empresa.nome", "nativeQueryRef": "nome"},
-            {"field": {"Column": {"Expression": {"SourceRef": {"Entity": "d_empresa"}}, "Property": "besst"}}, "queryRef": "d_empresa.besst", "nativeQueryRef": "besst"},
-            {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "_Medidas"}}, "Property": "Preço Atual Ação"}}, "queryRef": "_Medidas.Preço Atual Ação", "nativeQueryRef": "Preço Atual Ação"},
-            {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "_Medidas"}}, "Property": "Preço-Teto"}}, "queryRef": "_Medidas.Preço-Teto", "nativeQueryRef": "Preço-Teto"},
-            {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "_Medidas"}}, "Property": "Margem vs Teto %"}}, "queryRef": "_Medidas.Margem vs Teto %", "nativeQueryRef": "Margem vs Teto %"},
-            {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "_Medidas"}}, "Property": "Sinal Barsi"}}, "queryRef": "_Medidas.Sinal Barsi", "nativeQueryRef": "Sinal Barsi"},
-            {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "_Medidas"}}, "Property": "Dividend Yield 12m"}}, "queryRef": "_Medidas.Dividend Yield 12m", "nativeQueryRef": "Dividend Yield 12m"},
-            {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "_Medidas"}}, "Property": "DY Médio 5a"}}, "queryRef": "_Medidas.DY Médio 5a", "nativeQueryRef": "DY Médio 5a"},
-            {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "_Medidas"}}, "Property": "Anos Consecutivos"}}, "queryRef": "_Medidas.Anos Consecutivos", "nativeQueryRef": "Anos Consecutivos"},
-            {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "_Medidas"}}, "Property": "P/L"}}, "queryRef": "_Medidas.P/L", "nativeQueryRef": "P/L"},
-            {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "_Medidas"}}, "Property": "Score Barsi"}}, "queryRef": "_Medidas.Score Barsi", "nativeQueryRef": "Score Barsi"}
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "d_empresa"
+                    }
+                  },
+                  "Property": "nome"
+                }
+              },
+              "queryRef": "d_empresa.nome",
+              "nativeQueryRef": "nome"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "d_empresa"
+                    }
+                  },
+                  "Property": "besst"
+                }
+              },
+              "queryRef": "d_empresa.besst",
+              "nativeQueryRef": "besst"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Preço Atual Ação"
+                }
+              },
+              "queryRef": "_Medidas.Preço Atual Ação",
+              "nativeQueryRef": "Preço Atual Ação"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Preço-Teto"
+                }
+              },
+              "queryRef": "_Medidas.Preço-Teto",
+              "nativeQueryRef": "Preço-Teto"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Margem vs Teto %"
+                }
+              },
+              "queryRef": "_Medidas.Margem vs Teto %",
+              "nativeQueryRef": "Margem vs Teto %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Sinal Barsi"
+                }
+              },
+              "queryRef": "_Medidas.Sinal Barsi",
+              "nativeQueryRef": "Sinal Barsi"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Dividend Yield 12m"
+                }
+              },
+              "queryRef": "_Medidas.Dividend Yield 12m",
+              "nativeQueryRef": "Dividend Yield 12m"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "DY Médio 5a"
+                }
+              },
+              "queryRef": "_Medidas.DY Médio 5a",
+              "nativeQueryRef": "DY Médio 5a"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Anos Consecutivos"
+                }
+              },
+              "queryRef": "_Medidas.Anos Consecutivos",
+              "nativeQueryRef": "Anos Consecutivos"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "P/L"
+                }
+              },
+              "queryRef": "_Medidas.P/L",
+              "nativeQueryRef": "P/L"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Score Barsi"
+                }
+              },
+              "queryRef": "_Medidas.Score Barsi",
+              "nativeQueryRef": "Score Barsi"
+            }
           ]
         }
       },

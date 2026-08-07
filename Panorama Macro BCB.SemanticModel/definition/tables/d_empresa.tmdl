@@ -25,14 +25,6 @@ table d_empresa
 
 		annotation SummarizationSetBy = Automatic
 
-	column besst
-		dataType: string
-		lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000009
-		summarizeBy: none
-		sourceColumn: besst
-
-		annotation SummarizationSetBy = Automatic
-
 	column preco_atual
 		dataType: double
 		formatString: #,0.00
@@ -66,6 +58,14 @@ table d_empresa
 		lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000008
 		summarizeBy: none
 		sourceColumn: max_52s
+
+		annotation SummarizationSetBy = Automatic
+
+	column besst
+		dataType: string
+		lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000009
+		summarizeBy: none
+		sourceColumn: besst
 
 		annotation SummarizationSetBy = Automatic
 

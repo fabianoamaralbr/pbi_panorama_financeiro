@@ -15,3 +15,4 @@ table p_Sim_AporteMensal
 		source = GENERATESERIES(100, 20000, 100)
 
 	annotation PBI_ResultType = Table
+

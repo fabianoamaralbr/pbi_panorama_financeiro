@@ -1,19 +1,77 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "v_slicer_ticker",
-  "position": { "x": 40, "y": 60, "z": 100, "height": 90, "width": 300, "tabOrder": 100 },
+  "position": {
+    "x": 39.685344529285572,
+    "y": 60.472905949387531,
+    "z": 100,
+    "height": 319.37253454520294,
+    "width": 300.47475143601929,
+    "tabOrder": 100
+  },
   "visual": {
     "visualType": "slicer",
     "query": {
       "queryState": {
         "Values": {
           "projections": [
-            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "d_empresa" } }, "Property": "nome" } }, "queryRef": "d_empresa.nome", "nativeQueryRef": "nome", "active": true }
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "d_empresa"
+                    }
+                  },
+                  "Property": "nome"
+                }
+              },
+              "queryRef": "d_empresa.nome",
+              "nativeQueryRef": "nome",
+              "active": true
+            }
           ]
         }
       }
     },
-    "objects": { "data": [ { "properties": { "mode": { "expr": { "Literal": { "Value": "'Single'" } } } } } ] },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Single'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {}
+        }
+      ]
+    },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "897639009758d0005b25",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "d_empresa"
+              }
+            },
+            "Property": "nome"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

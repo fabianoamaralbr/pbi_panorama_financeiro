@@ -163,7 +163,7 @@ table _Medidas
 		displayFolder: 08. Barsi
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000102
 
-	measure 'Preço-Teto' = DIVIDE([Dividendo Médio Anual 5a], [Yield Desejado])
+	measure Preço-Teto = DIVIDE([Dividendo Médio Anual 5a], [Yield Desejado])
 		formatString: #,0.00
 		displayFolder: 08. Barsi
 		lineageTag: b1a7e0c2-7001-4aaa-8bbb-000000000103

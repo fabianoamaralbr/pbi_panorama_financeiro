@@ -53,15 +53,13 @@ pagadoras consistentes vs. oportunistas.
 
 ---
 
-### (c) Conflito de identidade de marca resolvido (tema padrão Power BI)
+### (c) Identidade visual definida (tema padrão Power BI)
 
-**Problema:** Havia uma diretriz organizacional de identidade de marca corporativa
-aplicável a projetos Power BI. Este projeto é
-**portfólio público no GitHub** e o dono decidiu não aplicar identidade corporativa.
+**Problema:** Definir a identidade visual do relatório. Este projeto é **portfólio público
+no GitHub** e o dono decidiu não aplicar nenhuma identidade de marca corporativa.
 
 **Decisão:** Manter o **tema padrão do Power BI** (sem customização de paleta, fonte ou
 logomarca). A decisão é do dono do repositório, que optou pelo perfil de portfólio neutro.
-Qualquer uso interno pode aplicar um tema corporativo em um fork.
 
 **Referência:** Declarado explicitamente no `CLAUDE.md` do projeto ("Sem identidade de marca
 neste projeto") e mantido em todas as novas páginas (04 Detalhe, 05 Ranking, 06 Simulador).

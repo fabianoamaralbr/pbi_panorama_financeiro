@@ -38,3 +38,4 @@ table f_proventos_anual
 				    Agrupado
 
 	annotation PBI_ResultType = Table
+

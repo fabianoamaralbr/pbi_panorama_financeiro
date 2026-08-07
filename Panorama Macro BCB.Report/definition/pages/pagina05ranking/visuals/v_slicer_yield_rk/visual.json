@@ -1,19 +1,54 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "v_slicer_yield_rk",
-  "position": { "x": 40, "y": 280, "z": 200, "height": 90, "width": 300, "tabOrder": 200 },
+  "position": {
+    "x": 40,
+    "y": 280,
+    "z": 200,
+    "height": 90,
+    "width": 300,
+    "tabOrder": 200
+  },
   "visual": {
     "visualType": "slicer",
     "query": {
       "queryState": {
         "Values": {
           "projections": [
-            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "p_YieldDesejado" } }, "Property": "Valor" } }, "queryRef": "p_YieldDesejado.Valor", "nativeQueryRef": "Valor", "active": true }
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "p_YieldDesejado"
+                    }
+                  },
+                  "Property": "Valor"
+                }
+              },
+              "queryRef": "p_YieldDesejado.Valor",
+              "nativeQueryRef": "Valor",
+              "active": true
+            }
           ]
         }
       }
     },
-    "objects": { "data": [ { "properties": { "mode": { "expr": { "Literal": { "Value": "'Single'" } } } } } ] },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Single'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "drillFilterOtherVisuals": true
   }
 }
