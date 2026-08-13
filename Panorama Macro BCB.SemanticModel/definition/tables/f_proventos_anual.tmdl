@@ -1,0 +1,41 @@
+table f_proventos_anual
+	lineageTag: b1a7e0c2-b001-4aaa-8bbb-000000000001
+
+	column ticker
+		dataType: string
+		lineageTag: b1a7e0c2-b001-4aaa-8bbb-000000000002
+		summarizeBy: none
+		sourceColumn: ticker
+
+		annotation SummarizationSetBy = Automatic
+
+	column ano
+		dataType: int64
+		formatString: 0
+		lineageTag: b1a7e0c2-b001-4aaa-8bbb-000000000003
+		summarizeBy: none
+		sourceColumn: ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column total_proventos
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b1a7e0c2-b001-4aaa-8bbb-000000000004
+		summarizeBy: sum
+		sourceColumn: total_proventos
+
+		annotation SummarizationSetBy = Automatic
+
+	partition f_proventos_anual = m
+		mode: import
+		source =
+				let
+				    Fonte = f_proventos,
+				    ComAno = Table.AddColumn(Fonte, "ano", each Date.Year([data_pagamento]), Int64.Type),
+				    Agrupado = Table.Group(ComAno, {"ticker", "ano"}, {{"total_proventos", each List.Sum([valor]), type number}})
+				in
+				    Agrupado
+
+	annotation PBI_ResultType = Table
+

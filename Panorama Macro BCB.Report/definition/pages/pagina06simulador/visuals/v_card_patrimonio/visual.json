@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "v_card_patrimonio",
+  "position": {
+    "x": 340,
+    "y": 60,
+    "z": 500,
+    "height": 120,
+    "width": 300,
+    "tabOrder": 500
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Patrimônio Projetado"
+                }
+              },
+              "queryRef": "_Medidas.Patrimônio Projetado",
+              "nativeQueryRef": "Patrimônio Projetado"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

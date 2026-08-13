@@ -1,0 +1,18 @@
+table p_Sim_DYEsperado
+	lineageTag: b1a7e0c2-c003-4aaa-8bbb-000000000001
+
+	column Valor
+		dataType: double
+		formatString: 0.0%
+		lineageTag: b1a7e0c2-c003-4aaa-8bbb-000000000002
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition p_Sim_DYEsperado = calculated
+		mode: import
+		source = GENERATESERIES(0.03, 0.12, 0.005)
+
+	annotation PBI_ResultType = Table
+

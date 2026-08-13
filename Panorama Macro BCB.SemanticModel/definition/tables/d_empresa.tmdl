@@ -61,6 +61,14 @@ table d_empresa
 
 		annotation SummarizationSetBy = Automatic
 
+	column besst
+		dataType: string
+		lineageTag: b1a7e0c2-8001-4aaa-8bbb-000000000009
+		summarizeBy: none
+		sourceColumn: besst
+
+		annotation SummarizationSetBy = Automatic
+
 	partition d_empresa = m
 		mode: import
 		source =
@@ -76,9 +84,16 @@ table d_empresa
 				    juncao = Table.NestedJoin(Cotacoes, {"ticker"}, setoresRen, {"ticker"}, "s", JoinKind.LeftOuter),
 				    comSetor = Table.ExpandTableColumn(juncao, "s", {"setor"}, {"setor"}),
 				    tipos = Table.TransformColumnTypes(comSetor, {{"ticker", type text}, {"nome", type text}, {"setor", type text}, {"preco_atual", type number}, {"pl", type number}, {"min_52s", type number}, {"max_52s", type number}}),
-				    ordem = Table.SelectColumns(tipos, {"ticker", "nome", "setor", "preco_atual", "pl", "min_52s", "max_52s"})
+				    ordem = Table.SelectColumns(tipos, {"ticker", "nome", "setor", "preco_atual", "pl", "min_52s", "max_52s"}),
+				    comBesst = Table.NestedJoin(ordem, {"ticker"}, d_besst, {"ticker"}, "b", JoinKind.LeftOuter),
+				    expBesst = Table.ExpandTableColumn(comBesst, "b", {"besst_sigla"}, {"besst_sigla"}),
+				    resolveBesst = Table.AddColumn(expBesst, "besst", each
+				        if [besst_sigla] <> null then [besst_sigla]
+				        else if [setor] = "Telecomunicações" then "T"
+				        else "—", type text),
+				    ordemFinal = Table.SelectColumns(resolveBesst, {"ticker", "nome", "setor", "besst", "preco_atual", "pl", "min_52s", "max_52s"})
 				in
-				    ordem
+				    ordemFinal
 
 	annotation PBI_ResultType = Table
 

@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "v_slicer_setor",
+  "name": "v_slicer_ticker",
   "position": {
-    "x": 39.8992443324937,
-    "y": 379.9496221662468,
-    "z": 0,
-    "height": 240.30226700251887,
-    "width": 300.15113350125944,
-    "tabOrder": 1000
+    "x": 39.685344529285572,
+    "y": 60.472905949387531,
+    "z": 100,
+    "height": 319.37253454520294,
+    "width": 300.47475143601929,
+    "tabOrder": 100
   },
   "visual": {
     "visualType": "slicer",
@@ -23,11 +23,11 @@
                       "Entity": "d_empresa"
                     }
                   },
-                  "Property": "besst"
+                  "Property": "nome"
                 }
               },
-              "queryRef": "d_empresa.besst",
-              "nativeQueryRef": "besst",
+              "queryRef": "d_empresa.nome",
+              "nativeQueryRef": "nome",
               "active": true
             }
           ]
@@ -35,6 +35,19 @@
       }
     },
     "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Single'"
+                }
+              }
+            }
+          }
+        }
+      ],
       "general": [
         {
           "properties": {}
@@ -46,7 +59,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "f75154ae57cb39e0c80c",
+        "name": "897639009758d0005b25",
         "field": {
           "Column": {
             "Expression": {
@@ -54,7 +67,7 @@
                 "Entity": "d_empresa"
               }
             },
-            "Property": "besst"
+            "Property": "nome"
           }
         },
         "type": "Categorical"

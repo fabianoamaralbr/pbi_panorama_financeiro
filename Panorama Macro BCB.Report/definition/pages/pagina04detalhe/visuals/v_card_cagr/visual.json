@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "v_card_cagr",
+  "position": {
+    "x": 520,
+    "y": 380,
+    "z": 800,
+    "height": 110,
+    "width": 220,
+    "tabOrder": 800
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Crescimento Dividendo CAGR 5a"
+                }
+              },
+              "queryRef": "_Medidas.Crescimento Dividendo CAGR 5a",
+              "nativeQueryRef": "Crescimento Dividendo CAGR 5a"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

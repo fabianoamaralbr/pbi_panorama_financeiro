@@ -26,6 +26,10 @@ datasets:
         type: double
       - name: max_52s
         type: double
+      - name: besst
+        type: string
+        tests: [not_null]
+        accepted_values: ["B", "E", "SA", "SE", "T", "—"]
     checks:
       - id: cobertura_preco
         description: Ao menos 80% dos tickers monitorados têm preço válido (falha parcial da brapi tolerada abaixo disso apenas com WARN).
@@ -61,6 +65,9 @@ datasets:
       - id: janela_12m
         description: Proventos dentro da janela de ~13 meses (margem de folga).
         expect: data_pagamento >= today() - 400 days
+      - id: janela_10a
+        description: Janela histórica cobre ~10 anos — min(data_pagamento) deve ser anterior a hoje − 9 anos (necessário para score Barsi e CAGR 5a).
+        expect: min(data_pagamento) <= today() - 9 years
 
   # Regra cruzada (medida DAX "Dividend Yield 12m"):
   - dataset: cross_check

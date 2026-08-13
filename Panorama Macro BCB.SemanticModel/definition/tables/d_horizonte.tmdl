@@ -1,0 +1,18 @@
+table d_horizonte
+	lineageTag: b1a7e0c2-c006-4aaa-8bbb-000000000001
+
+	column ano
+		dataType: int64
+		formatString: 0
+		lineageTag: b1a7e0c2-c006-4aaa-8bbb-000000000002
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition d_horizonte = calculated
+		mode: import
+		source = GENERATESERIES(1, 40, 1)
+
+	annotation PBI_ResultType = Table
+

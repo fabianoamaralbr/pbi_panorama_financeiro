@@ -14,3 +14,7 @@ relationship b1a7e0c2-6001-4aaa-8bbb-000000000004
 	fromColumn: f_proventos.data_pagamento
 	toColumn: d_calendario.data
 
+relationship b1a7e0c2-6001-4aaa-8bbb-000000000005
+	fromColumn: f_proventos_anual.ticker
+	toColumn: d_empresa.ticker
+

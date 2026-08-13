@@ -3,7 +3,10 @@
   "pageOrder": [
     "pagina01panorama",
     "pagina02explorar",
-    "pagina03dividendos"
+    "pagina03dividendos",
+    "pagina04detalhe",
+    "pagina05ranking",
+    "pagina06simulador"
   ],
-  "activePageName": "pagina03dividendos"
+  "activePageName": "pagina01panorama"
 }

@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "v_slicer_setor",
+  "name": "v_sl_dy",
   "position": {
-    "x": 39.8992443324937,
-    "y": 379.9496221662468,
-    "z": 0,
-    "height": 240.30226700251887,
-    "width": 300.15113350125944,
-    "tabOrder": 1000
+    "x": 39.685344529285572,
+    "y": 160.63115642806065,
+    "z": 200,
+    "height": 88.819580613162941,
+    "width": 279.68719001591734,
+    "tabOrder": 200
   },
   "visual": {
     "visualType": "slicer",
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "d_empresa"
+                      "Entity": "p_Sim_DYEsperado"
                     }
                   },
-                  "Property": "besst"
+                  "Property": "Valor"
                 }
               },
-              "queryRef": "d_empresa.besst",
-              "nativeQueryRef": "besst",
+              "queryRef": "p_Sim_DYEsperado.Valor",
+              "nativeQueryRef": "Valor",
               "active": true
             }
           ]
@@ -35,9 +35,17 @@
       }
     },
     "objects": {
-      "general": [
+      "data": [
         {
-          "properties": {}
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Single'"
+                }
+              }
+            }
+          }
         }
       ]
     },
@@ -46,18 +54,18 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "f75154ae57cb39e0c80c",
+        "name": "5fb3addf85cb20c406a0",
         "field": {
           "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "d_empresa"
+                "Entity": "p_Sim_DYEsperado"
               }
             },
-            "Property": "besst"
+            "Property": "Valor"
           }
         },
-        "type": "Categorical"
+        "type": "Advanced"
       }
     ]
   }
