@@ -1,0 +1,5 @@
+# Runtime: os scripts (barsi_calc, barsi_ranking, dq_check_panorama) usam apenas a
+# biblioteca padrão do Python (urllib, json, csv) — nenhuma dependência de execução.
+#
+# Dev/CI:
+pytest>=8.0

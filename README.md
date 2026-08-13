@@ -1,15 +1,83 @@
 # Panorama Financeiro
 
-Dashboard de portfólio em **Power BI (PBIP/TMDL)** que reúne, num só modelo, dois
-domínios de dados públicos do mercado brasileiro:
+[![CI](https://github.com/fabianoamaralbr/pbi_panorama_financeiro/actions/workflows/ci.yml/badge.svg)](https://github.com/fabianoamaralbr/pbi_panorama_financeiro/actions/workflows/ci.yml)
+![Power BI](https://img.shields.io/badge/Power%20BI-PBIP%2FTMDL-F2C811)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB)
+![Dados](https://img.shields.io/badge/dados-100%25%20p%C3%BAblicos-brightgreen)
 
-1. **Macro Brasil (BCB/SGS)** — Selic, CDI, IPCA, IGP-M, câmbio e PIB, via API do
-   Banco Central.
-2. **Ações do Ibovespa** — dividendos, preço, P/L e faixa de 52 semanas das ações do
-   índice, via brapi e Yahoo Finance.
+> Um dashboard de **Power BI** que cruza o **cenário macro brasileiro** com um **screener de
+> ações pagadoras de dividendos** (método Barsi/Bazin) para responder: *dado o juro atual,
+> quais ações perenes estão baratas o suficiente para gerar renda passiva — e quão
+> consistente é esse histórico?*
 
-O projeto começou como um panorama puramente macroeconômico e foi **ampliado** para
-cobrir também renda variável, tornando-se um panorama financeiro mais completo.
+Projeto de portfólio em **Power BI (PBIP/TMDL)**, 100% versionado em texto e alimentado por
+**APIs públicas** (Banco Central, brapi, Yahoo Finance). Reúne dois domínios num único modelo
+semântico:
+
+1. **Macro Brasil (BCB/SGS)** — Selic, CDI, IPCA, IGP-M, câmbio e PIB.
+2. **Ações — método Barsi** — dividendos, preço-teto (Bazin), consistência histórica, Score
+   composto e simulador de renda passiva, para o universo **BESST** (Bancos, Energia,
+   Saneamento, Seguros e Telecom).
+
+📊 **Achados com dados reais (snapshot datado):** **[`INSIGHTS.md`](INSIGHTS.md)** — inclui a
+leitura de que, com a Selic a 14%, o yield-alvo padrão de 6% do preço-teto fica conservador,
+e o screener das pagadoras BESST abaixo do teto.
+
+## 📸 Prévia
+
+> ⏳ **Screenshots pendentes.** O GitHub não renderiza `.pbip`, então as telas do relatório
+> precisam ser exportadas do Power BI Desktop para `docs/img/`. Guia passo a passo e os nomes
+> de arquivo esperados em [`docs/img/README.md`](docs/img/README.md). Assim que os PNGs
+> estiverem lá, descomente o bloco abaixo:
+
+<!-- Ative quando os PNGs existirem em docs/img/ :
+| Cenário Macro | Screener Barsi | Simulador de Renda Passiva |
+|---|---|---|
+| ![Cenário Macro](docs/img/01-macro.png) | ![Screener Barsi](docs/img/03-screener.png) | ![Simulador](docs/img/06-simulador.png) |
+-->
+
+
+## 🎯 O que este projeto demonstra
+
+- **Modelagem dimensional** — star schema com dois domínios no mesmo modelo, tudo em PBIP/TMDL versionado.
+- **DAX avançado** — medidas documentadas com padrões corretos (`REMOVEFILTERS`, `DIVIDE`, clamps, `SWITCH(TRUE())`), incluindo o VF de anuidade crescente reinvestida (simulador).
+- **Power Query (M)** — ingestão defensiva: janelamento da API do BCB (limite de 10 anos), `try...otherwise`, parsing por cultura.
+- **Analytics engineering** — oráculo Python testado (`pytest`) espelhando o DAX como fonte de verdade das fórmulas; **CI** rodando a cada push.
+- **Governança & qualidade** — *data contracts* (YAML), validação ao vivo contra as fontes e métricas de observabilidade.
+- **Domínio de negócio** — método Barsi/Bazin e a conexão explícita entre **macro** (custo de oportunidade) e **renda variável** (a oportunidade).
+
+## 🏛️ Arquitetura
+
+```mermaid
+flowchart LR
+    subgraph Fontes["APIs públicas"]
+        BCB["BCB SGS (macro)"]
+        BRAPI["brapi.dev (preço, P/L)"]
+        YAHOO["Yahoo Finance (dividendos 10a)"]
+    end
+    subgraph Modelo["Modelo semântico (TMDL)"]
+        FI["f_indicadores"]
+        DE["d_empresa"]
+        FP["f_proventos + f_proventos_anual"]
+        MED["_Medidas (DAX)"]
+        FI --> MED
+        DE --> MED
+        FP --> MED
+    end
+    subgraph Relatorio["Relatório — 6 páginas"]
+        PG["Macro · Dividendos · Screener · Detalhe · Ranking · Simulador"]
+    end
+    subgraph Qualidade["Qualidade & testes"]
+        ORA["barsi_calc.py + pytest"]
+        CON["data contracts YAML"]
+    end
+    BCB --> FI
+    BRAPI --> DE
+    YAHOO --> FP
+    MED --> PG
+    ORA -. espelha .-> MED
+    CON -. valida .-> DE
+```
 
 ## Fontes de dados
 
@@ -172,8 +240,15 @@ a ambiguidade dos setores retornados pela brapi.
 ### Verificação (oráculo Python)
 
 As fórmulas são implementadas primeiro em Python puro (`scripts/barsi_calc.py`) e testadas
-com pytest (`tests/test_barsi_calc.py`). As medidas DAX espelham essas fórmulas. Para
-checar um cenário do simulador diretamente:
+com pytest (`tests/test_barsi_calc.py`). As medidas DAX espelham essas fórmulas — o **CI
+(GitHub Actions)** roda a suíte a cada push:
+
+```bash
+pip install -r requirements.txt
+pytest -q
+```
+
+Para checar um cenário do simulador diretamente:
 
 ```bash
 python -c "
@@ -198,6 +273,19 @@ python scripts/dq_check_panorama.py          # sem token: pula d_empresa (WARN)
 
 Em tempo de relatório, as medidas da pasta **Diagnóstico** sinalizam falhas parciais de
 carga (ex.: `Cobertura de Preço %` abaixo de 100% indica tickers sem retorno da brapi).
+
+### Snapshot reproduzível (sem abrir o Power BI)
+
+`scripts/barsi_ranking.py` gera o ranking Barsi e o cenário macro a partir das mesmas APIs,
+usando o oráculo `barsi_calc.py` — assim qualquer pessoa vê os resultados sem o Desktop:
+
+```bash
+BRAPI_TOKEN=seu_token python scripts/barsi_ranking.py   # ranking completo (com preço/score)
+python scripts/barsi_ranking.py                         # sem token: só consistência (Yahoo/BCB)
+```
+
+Saídas datadas (Markdown + CSV) em `outputs/insights/`. A leitura interpretada desse
+snapshot está em [`INSIGHTS.md`](INSIGHTS.md).
 
 ---
 
