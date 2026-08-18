@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "v_card_min",
   "position": {
-    "x": 870,
-    "y": 470,
+    "x": 966.64987405541558,
+    "y": 469.72292191435764,
     "z": 4000,
-    "height": 100,
-    "width": 370,
+    "height": 100.65491183879092,
+    "width": 272.9471032745592,
     "tabOrder": 4000
   },
   "visual": {
@@ -69,5 +69,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "b4e27746083c7a04e7a8",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Mínimo"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

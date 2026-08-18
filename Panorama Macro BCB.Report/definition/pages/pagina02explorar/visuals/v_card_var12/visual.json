@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "v_card_var12",
   "position": {
-    "x": 870,
-    "y": 250,
+    "x": 966.64987405541558,
+    "y": 250.2770780856423,
     "z": 5000,
-    "height": 100,
-    "width": 370,
+    "height": 99.748110831234243,
+    "width": 272.9471032745592,
     "tabOrder": 5000
   },
   "visual": {
@@ -69,5 +69,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "9748984323061258c1e1",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Variação 12 Meses"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

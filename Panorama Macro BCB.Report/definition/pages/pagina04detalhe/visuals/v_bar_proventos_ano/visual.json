@@ -49,9 +49,106 @@
               "nativeQueryRef": "total_proventos"
             }
           ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "f_proventos_anual"
+                        }
+                      },
+                      "Property": "total_proventos"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(f_proventos_anual.total_proventos)",
+              "nativeQueryRef": "total_proventos1"
+            }
+          ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "f_proventos_anual"
+                      }
+                    },
+                    "Property": "total_proventos"
+                  }
+                },
+                "Function": 0
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
       }
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "15fdfa3d906c0386052c",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "f_proventos_anual"
+              }
+            },
+            "Property": "ano"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "7ed6ffd1e718d00ee021",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "f_proventos_anual"
+              }
+            },
+            "Property": "total_proventos"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ec74818c39b158a07170",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "f_proventos_anual"
+                  }
+                },
+                "Property": "total_proventos"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

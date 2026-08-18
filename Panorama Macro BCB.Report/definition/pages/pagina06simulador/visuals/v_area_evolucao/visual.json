@@ -63,9 +63,91 @@
               "nativeQueryRef": "Renda Mensal até o Ano"
             }
           ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Patrimônio até o Ano"
+                }
+              },
+              "queryRef": "_Medidas.Patrimônio até o Ano",
+              "nativeQueryRef": "Patrimônio até o Ano"
+            }
+          ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Medidas"
+                  }
+                },
+                "Property": "Patrimônio até o Ano"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
       }
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "5ebac9888d5ca7a12484",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "d_horizonte"
+              }
+            },
+            "Property": "ano"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "1d21f14895555dd634cc",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Patrimônio até o Ano"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "61241620367986b80738",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Renda Mensal até o Ano"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

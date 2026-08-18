@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "v_card_max",
   "position": {
-    "x": 870,
+    "x": 966.64987405541558,
     "y": 360,
     "z": 3000,
-    "height": 100,
-    "width": 370,
+    "height": 99.748110831234243,
+    "width": 272.9471032745592,
     "tabOrder": 3000
   },
   "visual": {
@@ -69,5 +69,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "bd0269e9874a672572a1",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Máximo"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

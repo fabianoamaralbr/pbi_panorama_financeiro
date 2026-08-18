@@ -50,5 +50,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "067bc9bbb6ca999d125d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "p_YieldDesejado"
+              }
+            },
+            "Property": "Valor"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

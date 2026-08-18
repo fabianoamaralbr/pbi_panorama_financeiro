@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panorama Financeiro — Mockup 4K</title>
+<style>
+  :root{
+    --bg:#eef1f4; --surface:#ffffff; --surface2:#f7f9fb;
+    --ink:#1b2733; --ink2:#5c6b7a; --ink3:#8a97a5;
+    --line:#e2e7ec; --accent:#2c7a7b; --accent2:#3a8f90;
+    --pos:#2f855a; --neg:#c0492b; --grid:#eef2f5;
+    --font: system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#3a4149;font-family:var(--font);color:var(--ink)}
+  /* ---- mockup chrome (fora do frame 4K) ---- */
+  #nav{position:fixed;top:0;left:0;z-index:9999;display:flex;gap:6px;align-items:center;
+       background:rgba(20,26,32,.92);color:#dfe6ec;padding:8px 12px;border-bottom-right-radius:10px;
+       font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.35)}
+  #nav b{font-weight:700;margin-right:8px;color:#fff}
+  #nav button{font:inherit;color:#cfd8e0;background:#2b333c;border:1px solid #3c4650;
+       padding:5px 10px;border-radius:6px;cursor:pointer}
+  #nav button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  #nav .hint{margin-left:10px;color:#94a3b0;font-size:12px}
+  /* ---- frame 4K ---- */
+  .page{display:none;padding:0}
+  .page.active{display:block}
+  .stage{width:3840px;height:2160px;position:relative;background:var(--bg);overflow:hidden}
+  .canvas{position:absolute;top:0;left:0;width:1280px;height:720px;
+          transform:scale(3);transform-origin:top left;background:var(--bg)}
+  .v{position:absolute}
+  /* ---- componentes (coords em espaço 1280x720; tudo é ×3) ---- */
+  .titlebar{color:var(--ink);font-weight:700;font-size:24px;letter-spacing:.2px;display:flex;align-items:baseline;gap:10px}
+  .titlebar .sub{font-size:12px;font-weight:500;color:var(--ink2)}
+  .pill{background:#e8f0ef;color:#1f5f5f;border:1px solid #cfe1df;border-radius:999px;
+        font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;
+        padding:12px 14px;display:flex;flex-direction:column;justify-content:center;
+        box-shadow:0 1px 2px rgba(20,30,40,.05)}
+  .card .lbl{font-size:11px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px}
+  .card .val{font-size:30px;font-weight:700;color:var(--ink);line-height:1.05;margin-top:3px}
+  .card .val.sm{font-size:24px}
+  .card .sub{font-size:11px;color:var(--ink3);margin-top:3px}
+  .card .val.pos{color:var(--pos)} .card .val.neg{color:var(--neg)}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+         box-shadow:0 1px 2px rgba(20,30,40,.05);display:flex;flex-direction:column}
+  .panel .ph{font-size:11px;font-weight:600;color:var(--ink2);padding:8px 12px 0;letter-spacing:.4px}
+  .panel .pb{flex:1;min-height:0}
+  .panel svg{display:block;width:100%;height:100%}
+  .slicer{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+          box-shadow:0 1px 2px rgba(20,30,40,.05)}
+  .slicer .lbl{font-size:11px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .drop{border:1px solid var(--line);border-radius:7px;background:var(--surface2);padding:7px 10px;
+        font-size:13px;color:var(--ink);display:flex;justify-content:space-between;align-items:center}
+  .drop .cx{color:var(--ink3)}
+  .opt{font-size:12px;color:var(--ink);padding:4px 2px;display:flex;align-items:center;gap:7px}
+  .opt .bx{width:11px;height:11px;border:1.5px solid #b7c2cc;border-radius:3px;display:inline-block}
+  .opt.on .bx{background:var(--accent);border-color:var(--accent)}
+  .opt.on{color:var(--ink);font-weight:600}
+  .track{height:5px;background:#e6ebef;border-radius:4px;margin:9px 2px 4px;position:relative}
+  .track .fill{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:4px}
+  .track .knob{position:absolute;top:50%;width:13px;height:13px;background:#fff;border:2px solid var(--accent);
+        border-radius:50%;transform:translate(-50%,-50%)}
+  table.dq{width:100%;border-collapse:collapse;font-size:11px}
+  table.dq th{text-align:left;color:var(--ink2);font-weight:600;padding:6px 8px;border-bottom:1.5px solid var(--line);
+        text-transform:uppercase;letter-spacing:.3px;font-size:9.5px;background:var(--surface2)}
+  table.dq td{padding:5px 8px;border-bottom:1px solid #eef2f5;color:var(--ink)}
+  table.dq td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .tag{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:999px}
+  .tag.buy{background:#e6f4ec;color:#256b45} .tag.wait{background:#fbece6;color:#9c4322}
+  .idx{width:22px;height:22px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);
+       display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--ink2)}
+  .listrow{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:6px 8px;border-radius:6px}
+  .listrow.on{background:#e8f0ef;color:#1f5f5f;font-weight:700}
+  .foot{position:absolute;left:40px;bottom:8px;font-size:10px;color:var(--ink3)}
+</style>
+</head>
+<body>
+<div id="nav">
+  <b>Panorama Financeiro · Mockup 4K</b>
+  <button data-go="1" class="active">1 · Macro</button>
+  <button data-go="2">2 · Explorar</button>
+  <button data-go="3">3 · Screener</button>
+  <button data-go="4">4 · Detalhe</button>
+  <button data-go="5">5 · Ranking</button>
+  <button data-go="6">6 · Simulador</button>
+  <span class="hint">3840×2160 · dados reais 13/08/2026 · dê zoom-out (Ctrl-) para ver o frame inteiro</span>
+</div>
+
+<!-- ================= PÁGINA 1 — MACRO (layout HORIZONTAL) ================= -->
+<section class="page active" data-page="1"><div class="stage"><div class="canvas">
+  <div class="v titlebar" style="left:40px;top:26px;width:640px;height:40px">
+    Panorama Macro <span class="sub">Cenário Brasil · indicadores BCB</span>
+  </div>
+  <div class="v pill" style="left:812px;top:24px;width:428px;height:40px">
+    Selic 14,00% a.a. — piso do yield-alvo p/ renda variável
+  </div>
+
+  <!-- 4 indicadores em LINHA: card (esq) + gráfico largo (dir) -->
+  <!-- Selic -->
+  <div class="v card" style="left:40px;top:100px;width:250px;height:144px">
+    <div class="lbl">Meta Selic</div><div class="val">14,00%</div><div class="sub">a.a. · desde 16/09</div>
+  </div>
+  <div class="v panel" style="left:306px;top:100px;width:934px;height:144px">
+    <div class="ph">Selic — meta (%)</div><div class="pb"><svg id="c_selic"></svg></div>
+  </div>
+  <!-- IPCA -->
+  <div class="v card" style="left:40px;top:252px;width:250px;height:144px">
+    <div class="lbl">IPCA 12m</div><div class="val">4,44%</div><div class="sub">acum. 12 meses · jul/26</div>
+  </div>
+  <div class="v panel" style="left:306px;top:252px;width:934px;height:144px">
+    <div class="ph">IPCA acumulado 12m (%) — últimos 24 meses</div><div class="pb"><svg id="c_ipca"></svg></div>
+  </div>
+  <!-- Dólar -->
+  <div class="v card" style="left:40px;top:404px;width:250px;height:144px">
+    <div class="lbl">Dólar PTAX</div><div class="val">R$ 5,1859</div><div class="sub">venda · 13/08</div>
+  </div>
+  <div class="v panel" style="left:306px;top:404px;width:934px;height:144px">
+    <div class="ph">Dólar PTAX (R$) — últimos 40 pregões</div><div class="pb"><svg id="c_dolar"></svg></div>
+  </div>
+  <!-- PIB -->
+  <div class="v card" style="left:40px;top:556px;width:250px;height:144px">
+    <div class="lbl">PIB Mensal</div><div class="val sm">R$ 1,17 tri</div><div class="sub">R$ 1.167.869 mi · jul/26</div>
+  </div>
+  <div class="v panel" style="left:306px;top:556px;width:934px;height:144px">
+    <div class="ph">PIB mensal (R$ milhões) — últimos 18 meses</div><div class="pb"><svg id="c_pib"></svg></div>
+  </div>
+  <div class="foot">Layout horizontal: card + gráfico lado a lado, dando maior largura à série temporal.</div>
+</div></div></section>
+
+<!-- ================= PÁGINA 2 — EXPLORAR (layout atual) ================= -->
+<section class="page" data-page="2"><div class="stage"><div class="canvas">
+  <div class="v slicer" style="left:40px;top:40px;width:400px;height:80px">
+    <div class="lbl">Indicador</div>
+    <div class="drop">IPCA (acum. 12m) <span class="cx">▾</span></div>
+  </div>
+  <div class="v panel" style="left:25px;top:145px;width:161px;height:550px">
+    <div class="ph">Indicadores</div>
+    <div class="pb" style="padding:6px">
+      <div class="listrow">Selic Meta</div><div class="listrow">CDI</div>
+      <div class="listrow">IPCA mensal</div><div class="listrow on">IPCA 12m</div>
+      <div class="listrow">IGP-M</div><div class="listrow">Dólar PTAX</div>
+      <div class="listrow">PIB mensal</div>
+    </div>
+  </div>
+  <div class="v panel" style="left:207px;top:139px;width:746px;height:420px">
+    <div class="ph">IPCA 12m — evolução</div><div class="pb"><svg id="c_p2line"></svg></div>
+  </div>
+  <div class="v card" style="left:966px;top:139px;width:272px;height:100px"><div class="lbl">Atual</div><div class="val">4,44%</div><div class="sub">jul/2026</div></div>
+  <div class="v card" style="left:966px;top:250px;width:272px;height:99px"><div class="lbl">Variação 12m</div><div class="val neg">−0,20 p.p.</div><div class="sub">vs jul/2025</div></div>
+  <div class="v card" style="left:966px;top:360px;width:272px;height:99px"><div class="lbl">Máximo (24m)</div><div class="val">5,53%</div></div>
+  <div class="v card" style="left:966px;top:469px;width:272px;height:100px"><div class="lbl">Mínimo (24m)</div><div class="val">3,81%</div></div>
+</div></div></section>
+
+<!-- ================= PÁGINA 3 — SCREENER (layout atual) ================= -->
+<section class="page" data-page="3"><div class="stage"><div class="canvas">
+  <div class="v titlebar" style="left:40px;top:24px;width:1200px;height:50px">
+    Seleção Barsi <span class="sub">Screener preço-teto (Bazin) · universo BESST</span>
+  </div>
+  <div class="v slicer" style="left:40px;top:100px;width:300px;height:74px">
+    <div class="lbl">Yield desejado (what-if)</div>
+    <div class="track"><div class="fill" style="width:30%"></div><div class="knob" style="left:30%"></div></div>
+    <div style="font-size:12px;color:var(--ink);font-weight:600">6,0% a.a.</div>
+  </div>
+  <div class="v card" style="left:40px;top:186px;width:300px;height:104px">
+    <div class="lbl">Ações abaixo do teto</div><div class="val pos">14</div><div class="sub">de 34 com preço · "Comprar"</div>
+  </div>
+  <div class="v slicer" style="left:40px;top:302px;width:300px;height:150px">
+    <div class="lbl">Setor BESST</div>
+    <div class="opt on"><span class="bx"></span>Bancos</div>
+    <div class="opt on"><span class="bx"></span>Energia</div>
+    <div class="opt on"><span class="bx"></span>Saneamento</div>
+    <div class="opt on"><span class="bx"></span>Seguros</div>
+    <div class="opt on"><span class="bx"></span>Telecom</div>
+  </div>
+  <div class="v panel" style="left:360px;top:100px;width:880px;height:250px">
+    <div class="ph">Screener — ordenado por Score Barsi</div>
+    <div class="pb" style="padding:2px 10px 6px">
+      <table class="dq">
+        <thead><tr><th>Ticker</th><th>Setor</th><th>Preço</th><th>Teto (6%)</th><th>Margem</th><th>Sinal</th><th>DY 5a</th><th>Score</th></tr></thead>
+        <tbody id="p3rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="v panel" style="left:360px;top:360px;width:880px;height:260px">
+    <div class="ph">Score Barsi por ticker</div><div class="pb"><svg id="c_p3bars"></svg></div>
+  </div>
+</div></div></section>
+
+<!-- ================= PÁGINA 4 — DETALHE (layout atual) ================= -->
+<section class="page" data-page="4"><div class="stage"><div class="canvas">
+  <div class="v slicer" style="left:39px;top:60px;width:300px;height:319px">
+    <div class="lbl">Ação</div>
+    <div class="drop" style="margin-bottom:8px">BBAS3 <span class="cx">▾</span></div>
+    <div class="opt on"><span class="bx"></span>BBAS3 — Banco do Brasil</div>
+    <div class="opt"><span class="bx"></span>ITUB4 — Itaú</div>
+    <div class="opt"><span class="bx"></span>TAEE11 — Taesa</div>
+    <div class="opt"><span class="bx"></span>EGIE3 — Engie</div>
+    <div class="opt"><span class="bx"></span>BBSE3 — BB Seguridade</div>
+    <div class="opt"><span class="bx"></span>CMIG4 — Cemig</div>
+    <div class="opt"><span class="bx"></span>SAPR11 — Sanepar</div>
+  </div>
+  <div class="v panel" style="left:360px;top:60px;width:560px;height:300px">
+    <div class="ph">Proventos por ano — BBAS3 (R$/ação)</div><div class="pb"><svg id="c_p4bars"></svg></div>
+  </div>
+  <div class="v card" style="left:940px;top:60px;width:300px;height:90px"><div class="lbl">Preço atual</div><div class="val">R$ 18,29</div></div>
+  <div class="v card" style="left:940px;top:160px;width:300px;height:90px"><div class="lbl">Preço-teto (6%)</div><div class="val">R$ 28,28</div></div>
+  <div class="v card" style="left:940px;top:260px;width:300px;height:90px"><div class="lbl">Margem vs teto</div><div class="val pos">+54,6%</div></div>
+  <div class="v card" style="left:40px;top:380px;width:220px;height:110px"><div class="lbl">Posição 52s</div><div class="val sm">63%</div><div class="sub">da faixa</div></div>
+  <div class="v card" style="left:280px;top:380px;width:220px;height:110px"><div class="lbl">Anos consecutivos</div><div class="val">10</div><div class="sub">janela 10a</div></div>
+  <div class="v card" style="left:520px;top:380px;width:220px;height:110px"><div class="lbl">CAGR dividendo 5a</div><div class="val pos">+9,9%</div></div>
+  <div class="v card" style="left:760px;top:380px;width:220px;height:110px"><div class="lbl">P/L</div><div class="val sm">7,4</div></div>
+</div></div></section>
+
+<!-- ================= PÁGINA 5 — RANKING (layout atual) ================= -->
+<section class="page" data-page="5"><div class="stage"><div class="canvas">
+  <div class="v slicer" style="left:40px;top:60px;width:300px;height:200px">
+    <div class="lbl">Sigla BESST</div>
+    <div class="opt on"><span class="bx"></span>Bancos</div>
+    <div class="opt on"><span class="bx"></span>Energia</div>
+    <div class="opt on"><span class="bx"></span>Saneamento</div>
+    <div class="opt on"><span class="bx"></span>Seguros</div>
+    <div class="opt on"><span class="bx"></span>Telecom</div>
+  </div>
+  <div class="v slicer" style="left:40px;top:280px;width:300px;height:90px">
+    <div class="lbl">Yield desejado</div>
+    <div class="track"><div class="fill" style="width:30%"></div><div class="knob" style="left:30%"></div></div>
+    <div style="font-size:12px;font-weight:600">6,0% a.a.</div>
+  </div>
+  <div class="v panel" style="left:360px;top:60px;width:880px;height:600px">
+    <div class="ph">Ranking por Score Barsi — universo BESST</div><div class="pb"><svg id="c_p5bars"></svg></div>
+  </div>
+</div></div></section>
+
+<!-- ================= PÁGINA 6 — SIMULADOR (layout atual) ================= -->
+<section class="page" data-page="6"><div class="stage"><div class="canvas">
+  <div class="v slicer" style="left:40px;top:60px;width:280px;height:90px">
+    <div class="lbl">Aporte mensal</div>
+    <div class="track"><div class="fill" style="width:20%"></div><div class="knob" style="left:20%"></div></div>
+    <div style="font-size:12px;font-weight:600">R$ 1.000</div>
+  </div>
+  <div class="v slicer" style="left:39px;top:160px;width:279px;height:88px">
+    <div class="lbl">DY esperado</div>
+    <div class="track"><div class="fill" style="width:30%"></div><div class="knob" style="left:30%"></div></div>
+    <div style="font-size:12px;font-weight:600">6,0% a.a.</div>
+  </div>
+  <div class="v slicer" style="left:40px;top:260px;width:280px;height:90px">
+    <div class="lbl">Crescimento do aporte</div>
+    <div class="track"><div class="fill" style="width:25%"></div><div class="knob" style="left:25%"></div></div>
+    <div style="font-size:12px;font-weight:600">5,0% a.a.</div>
+  </div>
+  <div class="v slicer" style="left:40px;top:360px;width:280px;height:90px">
+    <div class="lbl">Horizonte</div>
+    <div class="track"><div class="fill" style="width:50%"></div><div class="knob" style="left:50%"></div></div>
+    <div style="font-size:12px;font-weight:600">20 anos</div>
+  </div>
+  <div class="v card" style="left:340px;top:60px;width:300px;height:120px"><div class="lbl">Patrimônio projetado</div><div class="val">R$ 664.605</div><div class="sub">em 20 anos</div></div>
+  <div class="v card" style="left:660px;top:60px;width:300px;height:120px"><div class="lbl">Renda passiva mensal</div><div class="val pos">R$ 3.323</div><div class="sub">no ano 20</div></div>
+  <div class="v card" style="left:980px;top:60px;width:260px;height:120px"><div class="lbl">Total aportado</div><div class="val sm">R$ 396.791</div><div class="sub">+ R$ 267.814 reinvestidos</div></div>
+  <div class="v panel" style="left:340px;top:200px;width:900px;height:460px">
+    <div class="ph">Evolução do patrimônio (bola de neve) — R$ por ano</div><div class="pb"><svg id="c_p6area"></svg></div>
+  </div>
+</div></div></section>
+
+<script>
+const DATA = {
+  selic: Array(16).fill(14.0),
+  ipca: [4.24,4.42,4.76,4.87,4.83,4.56,5.06,5.48,5.53,5.32,5.35,5.23,5.13,5.17,4.68,4.46,4.26,4.44,3.81,4.14,4.39,4.72,4.64,4.44],
+  dolar:[5.1442,5.1395,5.1743,5.2098,5.1892,5.1695,5.1717,5.1766,5.195,5.1945,5.1717,5.167,5.1458,5.1552,5.1329,5.1088,5.1183,5.0742,5.0727,5.0975,5.1176,5.0894,5.078,5.0638,5.0807,5.0666,5.1005,5.1177,5.1217,5.0739,5.0773,5.0723,5.1053,5.1154,5.1017,5.0908,5.0963,5.1285,5.1639,5.1859],
+  pib:[1001753,1075840,1088976,1061063,1050306,1093460,1067006,1075242,1107657,1085507,1084626,1016969,1057037,1176973,1162475,1128771,1137165,1167869],
+  bbasAnos:[2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],
+  bbasVals:[0.227,0.473,0.967,1.277,0.738,1.133,2.085,1.894,2.188,1.183],
+  sim:[12000,25320,40069,56365,74333,94108,115836,139671,165781,194344,225551,259608,296735,337167,381156,428973,480905,537264,598379,664605],
+  rank:[
+   ["CMIG4","Energia",10.27,20.96,1.041,0.122,99.3],
+   ["BBAS3","Bancos",18.29,28.28,0.546,0.093,91.0],
+   ["TAEE11","Energia",37.97,63.45,0.671,0.100,85.1],
+   ["BMGB4","Bancos",4.91,6.49,0.322,0.079,82.3],
+   ["ABCB4","Bancos",22.69,27.81,0.226,0.073,80.6],
+   ["BBDC3","Bancos",14.63,16.91,0.156,0.069,76.8],
+   ["BBSE3","Seguros",37.21,44.55,0.197,0.072,76.7],
+   ["TIMS3","Telecom",18.04,21.33,0.182,0.071,74.1],
+   ["BBDC4","Bancos",16.63,18.60,0.118,0.067,73.2],
+   ["WIZC3","Seguros",7.50,8.18,0.091,0.066,71.7],
+   ["ISAE4","Energia",25.74,33.64,0.307,0.078,66.4],
+   ["SANB11","Bancos",29.71,34.11,0.148,0.069,64.6],
+   ["EGIE3","Energia",28.31,28.89,0.021,0.061,64.6],
+   ["ITSA4","Bancos",12.45,12.27,-0.015,0.059,62.6]
+  ]
+};
+const A='#2c7a7b';
+const brl=n=>n.toLocaleString('pt-BR');
+const pct=v=>(v*100).toFixed(1).replace('.',',')+'%';
+
+function svgLine(id,data,{fmt,color=A,minPad=.12}={}){
+  const el=document.getElementById(id); if(!el) return;
+  const W=el.clientWidth||600,H=el.clientHeight||120,p={t:8,r:14,b:14,l:14};
+  let mn=Math.min(...data),mx=Math.max(...data); const sp=(mx-mn)||1; mn-=sp*minPad; mx+=sp*minPad;
+  const iw=W-p.l-p.r,ih=H-p.t-p.b;
+  const X=i=>p.l+(data.length<2?iw/2:i/(data.length-1)*iw);
+  const Y=v=>p.t+ih-(v-mn)/(mx-mn)*ih;
+  const pts=data.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+  const area=`M${X(0).toFixed(1)},${(p.t+ih).toFixed(1)} L`+pts.replace(/ /g,' L')+` L${X(data.length-1).toFixed(1)},${(p.t+ih).toFixed(1)} Z`;
+  let grid='';for(let g=0;g<=3;g++){const yy=(p.t+g/3*ih).toFixed(1);grid+=`<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="#eef2f5" stroke-width="1"/>`;}
+  const lx=X(data.length-1),ly=Y(data[data.length-1]);
+  const lab=fmt?fmt(data[data.length-1]):data[data.length-1];
+  el.setAttribute('viewBox',`0 0 ${W} ${H}`);el.setAttribute('preserveAspectRatio','none');
+  el.innerHTML=`<defs><linearGradient id="g_${id}" x1="0" x2="0" y1="0" y2="1">
+     <stop offset="0" stop-color="${color}" stop-opacity=".22"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+     ${grid}<path d="${area}" fill="url(#g_${id})"/>
+     <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+     <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="3.4" fill="#fff" stroke="${color}" stroke-width="2.2"/>
+     <text x="${(lx-6).toFixed(1)}" y="${(ly-8).toFixed(1)}" text-anchor="end" font-size="11" font-weight="700" fill="${color}" font-family="var(--font)">${lab}</text>`;
+}
+function svgBars(id,labels,values,{fmt,color=A,hi=0}={}){
+  const el=document.getElementById(id); if(!el) return;
+  const W=el.clientWidth||600,H=el.clientHeight||200,p={t:14,r:10,b:26,l:28};
+  const mx=Math.max(...values)*1.12,iw=W-p.l-p.r,ih=H-p.t-p.b,n=values.length;
+  const bw=iw/n*0.62,gap=iw/n;
+  let s='';for(let g=0;g<=3;g++){const yy=(p.t+g/3*ih).toFixed(1);s+=`<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="#eef2f5"/>`;}
+  values.forEach((v,i)=>{const h=v/mx*ih,x=p.l+i*gap+(gap-bw)/2,y=p.t+ih-h;
+    s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="2.5" fill="${i===hi?A:'#8fbcbc'}"/>`;
+    s+=`<text x="${(x+bw/2).toFixed(1)}" y="${(y-4).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="700" fill="#5c6b7a">${fmt?fmt(v):v}</text>`;
+    s+=`<text x="${(x+bw/2).toFixed(1)}" y="${(p.t+ih+14).toFixed(1)}" text-anchor="middle" font-size="9.5" fill="#8a97a5">${labels[i]}</text>`;});
+  el.setAttribute('viewBox',`0 0 ${W} ${H}`);el.innerHTML=s;
+}
+function svgHBars(id,labels,values,sub,{fmt}={}){
+  const el=document.getElementById(id); if(!el) return;
+  const W=el.clientWidth||800,H=el.clientHeight||600,p={t:10,r:70,b:10,l:96};
+  const mx=Math.max(...values)*1.02,iw=W-p.l-p.r,n=values.length,rh=(H-p.t-p.b)/n,bh=rh*0.62;
+  let s='';
+  values.forEach((v,i)=>{const w=v/mx*iw,y=p.t+i*rh+(rh-bh)/2;
+    s+=`<rect x="${p.l}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${bh.toFixed(1)}" rx="2.5" fill="${i===0?A:'#8fbcbc'}"/>`;
+    s+=`<text x="${p.l-8}" y="${(y+bh*0.72).toFixed(1)}" text-anchor="end" font-size="11" font-weight="700" fill="#1b2733">${labels[i]}</text>`;
+    s+=`<text x="${(p.l-8)}" y="${(y+bh*0.72+12).toFixed(1)}" text-anchor="end" font-size="8.5" fill="#8a97a5">${sub[i]}</text>`;
+    s+=`<text x="${(p.l+w+6).toFixed(1)}" y="${(y+bh*0.72).toFixed(1)}" font-size="11" font-weight="700" fill="#2c7a7b">${fmt?fmt(v):v}</text>`;});
+  el.setAttribute('viewBox',`0 0 ${W} ${H}`);el.innerHTML=s;
+}
+
+function renderP3(){
+  const tb=document.getElementById('p3rows');if(!tb)return;
+  tb.innerHTML=DATA.rank.slice(0,6).map(r=>{
+    const buy=r[4]>0;return `<tr>
+     <td><b>${r[0]}</b></td><td>${r[1]}</td><td class="num">R$ ${r[2].toFixed(2).replace('.',',')}</td>
+     <td class="num">R$ ${r[3].toFixed(2).replace('.',',')}</td>
+     <td class="num" style="color:${buy?'#2f855a':'#c0492b'}">${(r[4]*100>0?'+':'')+(r[4]*100).toFixed(1).replace('.',',')}%</td>
+     <td><span class="tag ${buy?'buy':'wait'}">${buy?'Comprar':'Aguardar'}</span></td>
+     <td class="num">${(r[5]*100).toFixed(1).replace('.',',')}%</td><td class="num"><b>${r[6].toFixed(1).replace('.',',')}</b></td></tr>`;
+  }).join('');
+}
+function renderAll(){
+  svgLine('c_selic',DATA.selic,{fmt:v=>v.toFixed(2).replace('.',',')+'%',minPad:1});
+  svgLine('c_ipca',DATA.ipca,{fmt:v=>v.toFixed(2).replace('.',',')+'%'});
+  svgLine('c_dolar',DATA.dolar,{fmt:v=>'R$ '+v.toFixed(2).replace('.',',')});
+  svgLine('c_pib',DATA.pib,{fmt:v=>(v/1e6).toFixed(2).replace('.',',')+' tri'});
+  svgLine('c_p2line',DATA.ipca,{fmt:v=>v.toFixed(2).replace('.',',')+'%'});
+  renderP3();
+  svgBars('c_p3bars',DATA.rank.slice(0,12).map(r=>r[0]),DATA.rank.slice(0,12).map(r=>r[6]),{fmt:v=>v.toFixed(0)});
+  svgBars('c_p4bars',DATA.bbasAnos.map(a=>"'"+String(a).slice(2)),DATA.bbasVals,{fmt:v=>v.toFixed(2).replace('.',',')});
+  svgHBars('c_p5bars',DATA.rank.map(r=>r[0]),DATA.rank.map(r=>r[6]),DATA.rank.map(r=>r[1]),{fmt:v=>v.toFixed(1).replace('.',',')});
+  svgLine('c_p6area',DATA.sim,{fmt:v=>'R$ '+(v/1000).toFixed(0)+'k'});
+}
+// navegação
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelector('.page[data-page="'+b.dataset.go+'"]').classList.add('active');
+  b.classList.add('active'); requestAnimationFrame(renderAll);
+});
+window.addEventListener('load',()=>{
+  const gp=new URLSearchParams(location.search).get('p');
+  if(gp && document.querySelector('.page[data-page="'+gp+'"]')){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));
+    document.querySelector('.page[data-page="'+gp+'"]').classList.add('active');
+    const btn=document.querySelector('#nav button[data-go="'+gp+'"]'); if(btn) btn.classList.add('active');
+  }
+  renderAll();
+});
+window.addEventListener('resize',renderAll);
+</script>
+</body>
+</html>

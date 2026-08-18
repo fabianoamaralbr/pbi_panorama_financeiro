@@ -49,6 +49,29 @@
               "nativeQueryRef": "Score Barsi"
             }
           ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "f_proventos_anual"
+                        }
+                      },
+                      "Property": "total_proventos"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(f_proventos_anual.total_proventos)",
+              "nativeQueryRef": "total_proventos"
+            }
+          ]
         }
       },
       "sortDefinition": {
@@ -70,5 +93,56 @@
       }
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "573fe4f5e3ba1e90a504",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "d_empresa"
+              }
+            },
+            "Property": "nome"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "646065678eee3a44d508",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Score Barsi"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ce5d7907db446ea490bd",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "f_proventos_anual"
+                  }
+                },
+                "Property": "total_proventos"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }
